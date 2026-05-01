@@ -5,6 +5,7 @@ import {
   DeleteObjectCommand,
   ListObjectsV2Command,
   HeadObjectCommand,
+  GetObjectCommand,
   type _Object,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -93,6 +94,22 @@ export async function uploadR2Object(args: {
 
 export async function deleteR2Object(key: string): Promise<void> {
   await client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+}
+
+export async function getR2ObjectText(key: string): Promise<string | null> {
+  try {
+    const out = await client().send(
+      new GetObjectCommand({ Bucket: bucket, Key: key }),
+    );
+    const body = out.Body;
+    if (!body) return null;
+    return await (body as { transformToString: () => Promise<string> }).transformToString();
+  } catch (err) {
+    const name = (err as { name?: string; Code?: string })?.name ?? "";
+    const code = (err as { Code?: string })?.Code ?? "";
+    if (name === "NoSuchKey" || code === "NoSuchKey" || name === "NotFound") return null;
+    throw err;
+  }
 }
 
 export async function r2ObjectExists(key: string): Promise<boolean> {

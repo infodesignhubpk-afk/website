@@ -16,8 +16,8 @@ This repo ships:
 - **Language:** TypeScript strict, no `any`
 - **Styling:** Tailwind CSS v4 with CSS-first `@theme` config
 - **Forms:** React Hook Form + Zod
-- **Storage:** Cloudflare R2 via `@aws-sdk/client-s3` (S3-compatible)
-- **Persistence (admin-managed content):** JSON files in `data-store/` (drop in any Postgres/SQLite for production scale)
+- **Storage:** Cloudflare R2 via `@aws-sdk/client-s3` (S3-compatible) — both media uploads and admin-managed JSON content
+- **Persistence (admin-managed content):** R2 object store under the `data-store/` prefix when R2 is configured; falls back to local `data-store/*.json` files for first-time dev without R2 creds
 - **Fonts:** `next/font/google` — Jost (Century Gothic substitute) + Montserrat (Gotham substitute)
 
 ## Quick start
@@ -75,7 +75,7 @@ Sections:
 - **Orders** — captured from `/products/[slug]` order forms; status workflow (new → in_progress → fulfilled / cancelled)
 - **Media** — R2 manager: browse the bucket, upload, copy URL, open, delete, with folder grouping and search
 
-All admin writes are protected by the same passcode auth and stored in `data-store/*.json`. To use a database in production, replace the read/write helpers in `lib/admin/*.ts` with your DB driver of choice — the pages and forms call the same helper API.
+All admin writes are protected by the same passcode auth. Content is stored as JSON objects in R2 under the `data-store/` prefix when R2 credentials are present (recommended for any deployment), and falls back to local `data-store/*.json` for first-time dev. To swap in a real database later, replace the helpers in `lib/admin/*.ts` with your DB driver of choice — the pages and forms call the same helper API.
 
 ## Cloudflare R2 setup
 
@@ -89,7 +89,7 @@ The Media admin uploads images directly to R2 from the browser via `/api/admin/u
 ## Lead and order capture
 
 - `/api/lead` — receives contact, service inquiry and quote form submissions. Validated with Zod, honeypot field rejects bots, optionally forwards to `LEAD_WEBHOOK_URL`.
-- `/api/orders` — receives product order requests. Persisted to `data-store/orders.json` and visible in `/admin/orders`. Optionally forwarded to the same webhook with `kind: "order"`.
+- `/api/orders` — receives product order requests. Persisted via the R2-backed store and visible in `/admin/orders`. Optionally forwarded to the same webhook with `kind: "order"`.
 
 ## SEO
 
@@ -139,14 +139,30 @@ See `CLAUDE.md` for the full conventions reference (design tokens, typography, f
 - Mobile-first; design at 375px first
 - All service slugs end in `-peshawar`
 
-## Deploy
+## Deploy to Vercel
 
-1. Push to GitHub
-2. Import on Vercel (or any Node host)
-3. Add the environment variables in the host's project settings
-4. Cloudflare R2 works the same in production — just ensure the public URL base is reachable
+This project is configured for Vercel out of the box.
 
-## Known production caveats
+1. Push to GitHub.
+2. Import the repo on Vercel (auto-detects Next.js + pnpm via `pnpm-lock.yaml`).
+3. Add the environment variables from `.env.example` in **Project Settings → Environment Variables**. At minimum:
+   - `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_PHONE`, `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_EMAIL`
+   - `ADMIN_PASSCODE`
+   - All `R2_*` credentials (admin content **requires** R2 in production — Vercel's filesystem is read-only)
+4. Deploy. The configured region is `bom1` (Mumbai) for Pakistan latency — change in `vercel.json` if you need another region.
 
-- `data-store/*.json` works on local dev and a single-node host but is not safe for serverless/multi-instance deploys. For production scale, swap the helpers in `lib/admin/*.ts` to use a real database (Postgres via Drizzle/Prisma, or KV/D1). The page/form layer doesn't need to change.
+What's already wired for Vercel:
+
+- **R2-backed JSON persistence** — admin-managed content (blogs, products, categories, orders, site/SEO settings) is stored in R2 under `data-store/` so it survives across serverless invocations. The fs path is only used for local dev when R2 isn't configured.
+- **`vercel.json`** — region preference + per-route `maxDuration`/`memory` tuning (the upload route gets 60s + 1024 MB).
+- **Lockfile** — `pnpm-lock.yaml` only; `package-lock.json` is intentionally absent so Vercel uses pnpm.
+- **`engines.node`** — `>=20.0.0`.
+- **All API routes set `runtime = "nodejs"`** — required for the AWS SDK (it doesn't run on edge).
+- **Admin pages set `dynamic = "force-dynamic"`** — they read live state.
+- **Image remote patterns** — `next/image` allowlists R2 dev URLs, your custom R2 domain, and Cloudflare `imagedelivery.net`.
+- **Security headers** — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` set globally in `next.config.ts`.
+
+## Known caveats
+
 - The Cloudflare R2 credentials in `.env.local` should be rotated to fresh tokens before going live.
+- For high-write admin scenarios (heavy concurrent edits) the R2 JSON store is fine but eventually-consistent. Swap the helpers in `lib/admin/*.ts` to a real database (Vercel Postgres / Neon + Drizzle, or D1) if that becomes a concern. The page/form layer doesn't need to change.

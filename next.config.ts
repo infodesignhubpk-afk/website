@@ -10,6 +10,8 @@ const r2PublicHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       ...(r2PublicHost
@@ -19,6 +21,20 @@ const nextConfig: NextConfig = {
       { protocol: "https" as const, hostname: "*.r2.cloudflarestorage.com" },
       { protocol: "https" as const, hostname: "imagedelivery.net" },
     ],
+    formats: ["image/avif", "image/webp"],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
   },
 };
 

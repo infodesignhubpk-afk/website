@@ -1,14 +1,29 @@
 import "server-only";
 import { promises as fs } from "fs";
 import path from "path";
+import {
+  getR2ObjectText,
+  r2Configured,
+  uploadR2Object,
+} from "@/lib/r2";
 
 export const STORE_DIR = path.join(process.cwd(), "data-store");
+const R2_PREFIX = "data-store";
 
 async function ensureDir() {
   await fs.mkdir(STORE_DIR, { recursive: true });
 }
 
+function r2Key(file: string): string {
+  return `${R2_PREFIX}/${file.replace(/^\/+/, "")}`;
+}
+
 export async function readJson<T>(file: string, fallback: T): Promise<T> {
+  if (r2Configured) {
+    const text = await getR2ObjectText(r2Key(file));
+    if (text === null) return fallback;
+    return JSON.parse(text) as T;
+  }
   await ensureDir();
   const filePath = path.join(STORE_DIR, file);
   try {
@@ -22,10 +37,20 @@ export async function readJson<T>(file: string, fallback: T): Promise<T> {
 }
 
 export async function writeJson<T>(file: string, value: T): Promise<void> {
+  const json = JSON.stringify(value, null, 2);
+  if (r2Configured) {
+    await uploadR2Object({
+      key: r2Key(file),
+      body: Buffer.from(json, "utf8"),
+      contentType: "application/json; charset=utf-8",
+      cacheControl: "no-store, max-age=0",
+    });
+    return;
+  }
   await ensureDir();
   const filePath = path.join(STORE_DIR, file);
   const tmpPath = `${filePath}.tmp`;
-  await fs.writeFile(tmpPath, JSON.stringify(value, null, 2), "utf8");
+  await fs.writeFile(tmpPath, json, "utf8");
   await fs.rename(tmpPath, filePath);
 }
 

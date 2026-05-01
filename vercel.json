@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["bom1"],
+  "functions": {
+    "app/api/admin/upload/route.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "app/api/admin/media/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/lead/route.ts": {
+      "maxDuration": 15
+    },
+    "app/api/orders/route.ts": {
+      "maxDuration": 15
+    }
+  }
+}
