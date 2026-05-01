@@ -39,7 +39,7 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           ...data,
           submittedAt: new Date().toISOString(),
-          source: "designhub.pk",
+          source: "designhub.com.pk",
           userAgent: req.headers.get("user-agent") ?? "",
         }),
       });

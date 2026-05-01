@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       : undefined,
     deliveryFee: deliveryFeeFor(data.deliveryMethod),
     paymentMethod: data.paymentMethod ?? "cod",
-    source: req.headers.get("origin") ?? "designhub.pk",
+    source: req.headers.get("origin") ?? "designhub.com.pk",
   });
 
   const webhook = process.env.LEAD_WEBHOOK_URL;

@@ -7,7 +7,7 @@ export const siteConfig: SiteConfig = {
   legalName: "Design Hub Peshawar",
   shortDescription:
     "Branding, printing, signage and digital marketing agency in Peshawar.",
-  url: env.NEXT_PUBLIC_SITE_URL ?? "https://designhub.pk",
+  url: env.NEXT_PUBLIC_SITE_URL ?? "https://www.designhub.com.pk",
   phone: env.NEXT_PUBLIC_PHONE ?? "+923001234567",
   phoneDisplay: "+92 300 123 4567",
   whatsappNumber: env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "923001234567",
