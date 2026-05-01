@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
-import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 import { listPublishedProducts } from "@/lib/admin/products";
 import { listCategories } from "@/lib/admin/categories";
 import { buildMetadata } from "@/lib/seo";
@@ -34,17 +34,14 @@ export default async function ProductsPage({
 
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
-        <Container>
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Products", href: "/products" }]} />
-          <div className="mt-8 max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Products</h1>
-            <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">
-              Pre-priced, ready-to-order packages from our studio and print floor. Reserve from the page; we&apos;ll confirm by phone or WhatsApp inside one working day.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        title="Products"
+        description="Pre-priced, ready-to-order packages from our studio and print floor. Reserve from the page; we'll confirm by phone or WhatsApp inside one working day."
+        breadcrumbs={[
+          { name: "Home", href: "/" },
+          { name: "Products", href: "/products" },
+        ]}
+      />
 
       <Section surface="white" className="pt-0">
         <Container>

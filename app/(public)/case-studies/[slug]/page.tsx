@@ -33,7 +33,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<Params
 
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
+      <Section surface="white" className="pt-8 pb-10 md:pt-12 md:pb-12">
         <Container>
           <Breadcrumbs
             items={[
@@ -42,12 +42,12 @@ export default async function CaseStudyPage({ params }: { params: Promise<Params
               { name: c.client, href: `/case-studies/${c.slug}` },
             ]}
           />
-          <div className="mt-8 max-w-4xl">
+          <div className="mt-5 max-w-4xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted">
               {c.industry} · {c.client}
             </p>
-            <h1 className="mt-4 text-4xl md:text-6xl font-bold tracking-tight">{c.title}</h1>
-            <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">{c.summary}</p>
+            <h1 className="mt-3 text-3xl md:text-5xl font-bold tracking-tight">{c.title}</h1>
+            <p className="mt-3 text-base md:text-lg leading-relaxed text-ink-soft">{c.summary}</p>
           </div>
         </Container>
       </Section>

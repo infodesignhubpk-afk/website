@@ -45,15 +45,15 @@ export default async function AboutPage() {
   const site = await getSite();
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
+      <Section surface="white" className="pt-8 pb-10 md:pt-12 md:pb-12">
         <Container>
           <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "About", href: "/about" }]} />
-          <div className="mt-8 grid gap-10 lg:grid-cols-12">
+          <div className="mt-5 grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+              <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
                 A Peshawar studio building brands that work outside the screen.
               </h1>
-              <p className="mt-6 max-w-3xl text-base md:text-xl leading-relaxed text-ink-soft">
+              <p className="mt-3 max-w-3xl text-base md:text-lg leading-relaxed text-ink-soft">
                 {site.name} started in {site.founded} with a simple idea: a Peshawar business should not have to coordinate five vendors to get a logo, a banner, a signboard and a social campaign that look like they belong to the same brand. Seven years and {trustStats[0].value} projects later, that is still what we do — under one roof.
               </p>
             </div>
@@ -71,7 +71,7 @@ export default async function AboutPage() {
         </Container>
       </Section>
 
-      <Section surface="white">
+      <Section surface="white" className="pt-0">
         <Container>
           <SectionHeading
             eyebrow="Principles"

@@ -29,7 +29,7 @@ export default async function CheckoutSuccessPage({
   const site = await getSite();
 
   return (
-    <Section surface="white" className="pt-12 pb-24 md:pt-20 md:pb-32">
+    <Section surface="white" className="pt-8 pb-16 md:pt-12 md:pb-20">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-brand text-ink">

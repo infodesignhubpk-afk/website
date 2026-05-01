@@ -59,7 +59,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<Pa
 
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
+      <Section surface="white" className="pt-8 pb-4 md:pt-10 md:pb-4">
         <Container>
           <Breadcrumbs
             items={[
@@ -71,7 +71,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<Pa
         </Container>
       </Section>
 
-      <Section surface="white" className="pt-8">
+      <Section surface="white" className="pt-4 md:pt-6">
         <Container>
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-7">

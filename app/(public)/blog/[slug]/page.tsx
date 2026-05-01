@@ -52,7 +52,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
+      <Section surface="white" className="pt-8 pb-10 md:pt-12 md:pb-12">
         <Container>
           <Breadcrumbs
             items={[
@@ -61,17 +61,17 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
               { name: post.title, href: `/blog/${post.slug}` },
             ]}
           />
-          <div className="mt-8 max-w-3xl">
+          <div className="mt-5 max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted">
               {post.date} · {post.readingMinutes} min read · {post.author}
             </p>
-            <h1 className="mt-4 text-4xl md:text-5xl font-bold tracking-tight">{post.title}</h1>
-            <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">{post.excerpt}</p>
+            <h1 className="mt-3 text-3xl md:text-5xl font-bold tracking-tight">{post.title}</h1>
+            <p className="mt-3 text-base md:text-lg leading-relaxed text-ink-soft">{post.excerpt}</p>
           </div>
         </Container>
       </Section>
 
-      <Section surface="white">
+      <Section surface="white" className="pt-0">
         <Container className="max-w-3xl">
           <article className="space-y-5 text-base md:text-lg leading-relaxed text-ink">
             {post.body.map((p, i) => (

@@ -46,7 +46,7 @@ export default async function PortfolioItemPage({ params }: { params: Promise<Pa
 
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
+      <Section surface="white" className="pt-8 pb-10 md:pt-12 md:pb-12">
         <Container>
           <Breadcrumbs
             items={[
@@ -55,10 +55,10 @@ export default async function PortfolioItemPage({ params }: { params: Promise<Pa
               { name: item.title, href: `/portfolio/${item.slug}` },
             ]}
           />
-          <div className="mt-8 max-w-4xl">
+          <div className="mt-5 max-w-4xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted">{item.category} · {item.year}</p>
-            <h1 className="mt-4 text-4xl md:text-6xl font-bold tracking-tight">{item.title}</h1>
-            <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">{item.summary}</p>
+            <h1 className="mt-3 text-3xl md:text-5xl font-bold tracking-tight">{item.title}</h1>
+            <p className="mt-3 text-base md:text-lg leading-relaxed text-ink-soft">{item.summary}</p>
           </div>
         </Container>
       </Section>
