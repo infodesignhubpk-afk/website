@@ -1,11 +1,9 @@
 import "server-only";
 import { cache } from "react";
-import { readJson, writeJson } from "@/lib/store";
+import { d1All, d1Exec, d1Configured, nowMs } from "@/lib/db";
 import { siteConfig } from "@/data/site";
 import type { SiteSettings } from "@/types/admin";
 import type { SiteConfig } from "@/types";
-
-const FILE = "site.json";
 
 const seed: SiteSettings = {
   name: siteConfig.name,
@@ -35,12 +33,26 @@ const seed: SiteSettings = {
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-  const stored = await readJson<Partial<SiteSettings>>(FILE, {});
-  return { ...seed, ...stored };
+  if (!d1Configured) return seed;
+  try {
+    const rows = await d1All<{ data: string }>(
+      "SELECT data FROM site_settings WHERE id = 1",
+    );
+    if (!rows.length) return seed;
+    const stored = JSON.parse(rows[0].data) as Partial<SiteSettings>;
+    return { ...seed, ...stored };
+  } catch (err) {
+    console.warn("[site] D1 read failed, using seed defaults:", err);
+    return seed;
+  }
 }
 
 export async function saveSiteSettings(value: SiteSettings): Promise<void> {
-  await writeJson(FILE, value);
+  await d1Exec(
+    `INSERT INTO site_settings (id, data, updated_at) VALUES (1, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`,
+    [JSON.stringify(value), nowMs()],
+  );
 }
 
 export const getSite = cache(async (): Promise<SiteConfig & {

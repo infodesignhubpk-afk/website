@@ -16,8 +16,8 @@ This repo ships:
 - **Language:** TypeScript strict, no `any`
 - **Styling:** Tailwind CSS v4 with CSS-first `@theme` config
 - **Forms:** React Hook Form + Zod
-- **Storage:** Cloudflare R2 via `@aws-sdk/client-s3` (S3-compatible) — both media uploads and admin-managed JSON content
-- **Persistence (admin-managed content):** R2 object store under the `data-store/` prefix when R2 is configured; falls back to local `data-store/*.json` files for first-time dev without R2 creds
+- **Object storage (images):** Cloudflare R2 via `@aws-sdk/client-s3` (S3-compatible) — logos, favicons, product/blog images, all media uploads
+- **Database (content):** Cloudflare D1 (SQLite at the edge) via the D1 HTTP API — site settings, SEO, blogs, products, categories, orders
 - **Fonts:** `next/font/google` — Jost (Century Gothic substitute) + Montserrat (Gotham substitute)
 
 ## Quick start
@@ -49,6 +49,7 @@ See `.env.example` for the full list. Required:
 | `ADMIN_PASSCODE` | Passcode for `/admin` login |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | Cloudflare R2 credentials for media uploads |
 | `R2_PUBLIC_BASE_URL` | Public URL base for R2 objects (R2 dev URL or your custom domain) |
+| `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_D1_DATABASE_ID`, `CLOUDFLARE_API_TOKEN` | Cloudflare D1 credentials for admin content storage |
 
 Optional:
 
@@ -75,9 +76,9 @@ Sections:
 - **Orders** — captured from `/products/[slug]` order forms; status workflow (new → in_progress → fulfilled / cancelled)
 - **Media** — R2 manager: browse the bucket, upload, copy URL, open, delete, with folder grouping and search
 
-All admin writes are protected by the same passcode auth. Content is stored as JSON objects in R2 under the `data-store/` prefix when R2 credentials are present (recommended for any deployment), and falls back to local `data-store/*.json` for first-time dev. To swap in a real database later, replace the helpers in `lib/admin/*.ts` with your DB driver of choice — the pages and forms call the same helper API.
+All admin writes are protected by the same passcode auth. Content lives in Cloudflare D1 (SQLite) — see `db/schema.sql` for the table layout. Each entity has indexed columns (id, slug, status…) plus a `data` JSON blob holding the full record, so type changes don't require a migration. Image uploads go to R2.
 
-## Cloudflare R2 setup
+## Cloudflare R2 setup (images)
 
 1. Create a bucket in the Cloudflare R2 dashboard.
 2. Create an API token (Manage → API Tokens) with **Object Read & Write** scope on the bucket.
@@ -86,10 +87,20 @@ All admin writes are protected by the same passcode auth. Content is stored as J
 
 The Media admin uploads images directly to R2 from the browser via `/api/admin/upload`. Uploaded URLs are copied via the **Copy URL** button and saved to product/blog/site records.
 
+## Cloudflare D1 setup (database)
+
+1. Create a database in the Cloudflare D1 dashboard (Workers & Pages → D1) — give it a name like `designhub`.
+2. Copy the **Database ID** from the Settings tab.
+3. Open the **Console** tab and paste the contents of [`db/schema.sql`](db/schema.sql), then run it. This creates the tables (`site_settings`, `seo_settings`, `blogs`, `products`, `categories`, `orders`) plus indexes.
+4. Create an API token (My Profile → API Tokens → Create Token) with the **D1 → Edit** permission scoped to your account. Copy the token.
+5. Drop `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_D1_DATABASE_ID` and `CLOUDFLARE_API_TOKEN` into `.env.local` (and into Vercel's Environment Variables for production).
+
+On first read, the admin libs auto-seed the empty database with default content from `data/blog.ts` and the seed arrays in `lib/admin/products.ts` / `lib/admin/categories.ts`.
+
 ## Lead and order capture
 
 - `/api/lead` — receives contact, service inquiry and quote form submissions. Validated with Zod, honeypot field rejects bots, optionally forwards to `LEAD_WEBHOOK_URL`.
-- `/api/orders` — receives product order requests. Persisted via the R2-backed store and visible in `/admin/orders`. Optionally forwarded to the same webhook with `kind: "order"`.
+- `/api/orders` — receives product order requests. Persisted to D1 and visible in `/admin/orders`. Optionally forwarded to the same webhook with `kind: "order"`.
 
 ## SEO
 
@@ -153,8 +164,8 @@ This project is configured for Vercel out of the box.
 
 What's already wired for Vercel:
 
-- **R2-backed JSON persistence** — admin-managed content (blogs, products, categories, orders, site/SEO settings) is stored in R2 under `data-store/` so it survives across serverless invocations. The fs path is only used for local dev when R2 isn't configured.
-- **`vercel.json`** — region preference + per-route `maxDuration`/`memory` tuning (the upload route gets 60s + 1024 MB).
+- **D1-backed content persistence** — admin-managed content (blogs, products, categories, orders, site/SEO settings) lives in Cloudflare D1 via the HTTP API. Survives across serverless invocations. R2 is used for media (images, logos, favicons).
+- **`vercel.json`** — region preference (Mumbai `bom1`) + route-segment `maxDuration` exports on heavy routes.
 - **Lockfile** — `pnpm-lock.yaml` only; `package-lock.json` is intentionally absent so Vercel uses pnpm.
 - **`engines.node`** — `>=20.0.0`.
 - **All API routes set `runtime = "nodejs"`** — required for the AWS SDK (it doesn't run on edge).
@@ -164,5 +175,5 @@ What's already wired for Vercel:
 
 ## Known caveats
 
-- The Cloudflare R2 credentials in `.env.local` should be rotated to fresh tokens before going live.
-- For high-write admin scenarios (heavy concurrent edits) the R2 JSON store is fine but eventually-consistent. Swap the helpers in `lib/admin/*.ts` to a real database (Vercel Postgres / Neon + Drizzle, or D1) if that becomes a concern. The page/form layer doesn't need to change.
+- The Cloudflare R2 and D1 API tokens in `.env.local` should be rotated to fresh tokens before going live.
+- D1 is accessed over HTTP (not native bindings) since the app runs on Vercel — expect ~50–150 ms per query. If admin write volume grows or you want native bindings, deploy on Cloudflare Pages instead and switch to `env.DB` bindings.

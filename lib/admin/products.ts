@@ -1,8 +1,21 @@
 import "server-only";
-import { readJson, writeJson, newId, slugify } from "@/lib/store";
+import { d1All, d1Exec, d1Configured, nowMs } from "@/lib/db";
+import { newId, slugify } from "@/lib/store";
 import type { AdminProduct } from "@/types/admin";
 
-const FILE = "products.json";
+type ProductRow = {
+  id: string;
+  slug: string;
+  data: string;
+  published: number;
+  created_at: number;
+  updated_at: number;
+};
+
+function rowToProduct(row: ProductRow): AdminProduct {
+  const parsed = JSON.parse(row.data) as AdminProduct;
+  return { ...parsed, id: row.id, slug: row.slug, published: row.published === 1 };
+}
 
 const seed: AdminProduct[] = [
   {
@@ -85,58 +98,117 @@ const seed: AdminProduct[] = [
   },
 ];
 
-export async function listProducts(): Promise<AdminProduct[]> {
-  const all = await readJson<AdminProduct[] | null>(FILE, null);
-  if (!all) {
-    await writeJson(FILE, seed);
-    return seed;
+let _seeded = false;
+async function ensureSeed(): Promise<void> {
+  if (_seeded || !d1Configured) return;
+  try {
+    const rows = await d1All<{ count: number }>("SELECT COUNT(*) AS count FROM products");
+    if ((rows[0]?.count ?? 0) > 0) {
+      _seeded = true;
+      return;
+    }
+    const now = nowMs();
+    for (const p of seed) {
+      await d1Exec(
+        `INSERT OR IGNORE INTO products (id, slug, data, published, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [p.id, p.slug, JSON.stringify(p), p.published ? 1 : 0, now, now],
+      );
+    }
+    _seeded = true;
+  } catch (err) {
+    console.warn("[products] seed failed:", err);
   }
-  return all;
+}
+
+export async function listProducts(): Promise<AdminProduct[]> {
+  if (!d1Configured) return [];
+  await ensureSeed();
+  try {
+    const rows = await d1All<ProductRow>(
+      "SELECT id, slug, data, published, created_at, updated_at FROM products ORDER BY created_at DESC",
+    );
+    return rows.map(rowToProduct);
+  } catch (err) {
+    console.warn("[products] list failed:", err);
+    return [];
+  }
 }
 
 export async function listPublishedProducts(): Promise<AdminProduct[]> {
-  return (await listProducts()).filter((p) => p.published);
+  if (!d1Configured) return [];
+  await ensureSeed();
+  try {
+    const rows = await d1All<ProductRow>(
+      "SELECT id, slug, data, published, created_at, updated_at FROM products WHERE published = 1 ORDER BY created_at DESC",
+    );
+    return rows.map(rowToProduct);
+  } catch (err) {
+    console.warn("[products] listPublished failed:", err);
+    return [];
+  }
 }
 
 export async function getProductById(id: string): Promise<AdminProduct | null> {
-  const all = await listProducts();
-  return all.find((p) => p.id === id) ?? null;
+  if (!d1Configured) return null;
+  await ensureSeed();
+  const rows = await d1All<ProductRow>(
+    "SELECT id, slug, data, published, created_at, updated_at FROM products WHERE id = ?",
+    [id],
+  );
+  return rows[0] ? rowToProduct(rows[0]) : null;
 }
 
 export async function getProductBySlug(slug: string): Promise<AdminProduct | null> {
-  const all = await listProducts();
-  return all.find((p) => p.slug === slug) ?? null;
+  if (!d1Configured) return null;
+  await ensureSeed();
+  const rows = await d1All<ProductRow>(
+    "SELECT id, slug, data, published, created_at, updated_at FROM products WHERE slug = ?",
+    [slug],
+  );
+  return rows[0] ? rowToProduct(rows[0]) : null;
 }
 
-export async function createProduct(input: Omit<AdminProduct, "id" | "slug" | "createdAt" | "updatedAt"> & { slug?: string }): Promise<AdminProduct> {
+export async function createProduct(
+  input: Omit<AdminProduct, "id" | "slug" | "createdAt" | "updatedAt"> & { slug?: string },
+): Promise<AdminProduct> {
   const all = await listProducts();
   const baseSlug = input.slug?.trim() || slugify(input.name);
   const slug = uniqueSlug(baseSlug, all.map((p) => p.slug));
-  const now = new Date().toISOString();
-  const product: AdminProduct = { ...input, slug, id: newId("prd"), createdAt: now, updatedAt: now };
-  await writeJson(FILE, [product, ...all]);
+  const nowIso = new Date().toISOString();
+  const id = newId("prd");
+  const product: AdminProduct = { ...input, slug, id, createdAt: nowIso, updatedAt: nowIso };
+  const now = nowMs();
+  await d1Exec(
+    `INSERT INTO products (id, slug, data, published, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [id, slug, JSON.stringify(product), product.published ? 1 : 0, now, now],
+  );
   return product;
 }
 
-export async function updateProduct(id: string, input: Partial<Omit<AdminProduct, "id" | "createdAt">>): Promise<AdminProduct | null> {
-  const all = await listProducts();
-  const i = all.findIndex((p) => p.id === id);
-  if (i < 0) return null;
-  const next: AdminProduct = { ...all[i], ...input, id, updatedAt: new Date().toISOString() };
+export async function updateProduct(
+  id: string,
+  input: Partial<Omit<AdminProduct, "id" | "createdAt">>,
+): Promise<AdminProduct | null> {
+  const current = await getProductById(id);
+  if (!current) return null;
+  const next: AdminProduct = { ...current, ...input, id, updatedAt: new Date().toISOString() };
   if (input.slug) {
+    const all = await listProducts();
     next.slug = uniqueSlug(slugify(input.slug), all.filter((p) => p.id !== id).map((p) => p.slug));
   }
-  const arr = [...all];
-  arr[i] = next;
-  await writeJson(FILE, arr);
+  await d1Exec(
+    `UPDATE products SET slug = ?, data = ?, published = ?, updated_at = ? WHERE id = ?`,
+    [next.slug, JSON.stringify(next), next.published ? 1 : 0, nowMs(), id],
+  );
   return next;
 }
 
 export async function deleteProduct(id: string): Promise<boolean> {
-  const all = await listProducts();
-  const next = all.filter((p) => p.id !== id);
-  if (next.length === all.length) return false;
-  await writeJson(FILE, next);
+  const current = await getProductById(id);
+  if (!current) return false;
+  await d1Exec("DELETE FROM products WHERE id = ?", [id]);
   return true;
 }
 

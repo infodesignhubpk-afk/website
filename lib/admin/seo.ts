@@ -1,8 +1,6 @@
 import "server-only";
-import { readJson, writeJson } from "@/lib/store";
+import { d1All, d1Exec, d1Configured, nowMs } from "@/lib/db";
 import type { SeoSettings } from "@/types/admin";
-
-const FILE = "seo.json";
 
 const seed: SeoSettings = {
   defaultTitle: "Design Hub | Branding, Printing & Signage Agency in Peshawar",
@@ -22,9 +20,24 @@ const seed: SeoSettings = {
 };
 
 export async function getSeoSettings(): Promise<SeoSettings> {
-  return readJson<SeoSettings>(FILE, seed);
+  if (!d1Configured) return seed;
+  try {
+    const rows = await d1All<{ data: string }>(
+      "SELECT data FROM seo_settings WHERE id = 1",
+    );
+    if (!rows.length) return seed;
+    const stored = JSON.parse(rows[0].data) as Partial<SeoSettings>;
+    return { ...seed, ...stored };
+  } catch (err) {
+    console.warn("[seo] D1 read failed, using seed defaults:", err);
+    return seed;
+  }
 }
 
 export async function saveSeoSettings(value: SeoSettings): Promise<void> {
-  await writeJson(FILE, value);
+  await d1Exec(
+    `INSERT INTO seo_settings (id, data, updated_at) VALUES (1, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`,
+    [JSON.stringify(value), nowMs()],
+  );
 }
