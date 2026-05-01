@@ -10,29 +10,32 @@ import {
 export const STORE_DIR = path.join(process.cwd(), "data-store");
 const R2_PREFIX = "data-store";
 
-async function ensureDir() {
-  await fs.mkdir(STORE_DIR, { recursive: true });
-}
-
 function r2Key(file: string): string {
   return `${R2_PREFIX}/${file.replace(/^\/+/, "")}`;
 }
 
 export async function readJson<T>(file: string, fallback: T): Promise<T> {
   if (r2Configured) {
-    const text = await getR2ObjectText(r2Key(file));
-    if (text === null) return fallback;
-    return JSON.parse(text) as T;
+    try {
+      const text = await getR2ObjectText(r2Key(file));
+      if (text === null) return fallback;
+      return JSON.parse(text) as T;
+    } catch (err) {
+      console.warn(`[store] R2 read failed for ${file}:`, err);
+      return fallback;
+    }
   }
-  await ensureDir();
   const filePath = path.join(STORE_DIR, file);
   try {
     const raw = await fs.readFile(filePath, "utf8");
     return JSON.parse(raw) as T;
   } catch (err) {
     const e = err as NodeJS.ErrnoException;
-    if (e.code === "ENOENT") return fallback;
-    throw err;
+    if (e.code === "ENOENT" || e.code === "EROFS" || e.code === "EACCES") {
+      return fallback;
+    }
+    console.warn(`[store] fs read failed for ${file}:`, err);
+    return fallback;
   }
 }
 
@@ -47,7 +50,7 @@ export async function writeJson<T>(file: string, value: T): Promise<void> {
     });
     return;
   }
-  await ensureDir();
+  await fs.mkdir(STORE_DIR, { recursive: true });
   const filePath = path.join(STORE_DIR, file);
   const tmpPath = `${filePath}.tmp`;
   await fs.writeFile(tmpPath, json, "utf8");
