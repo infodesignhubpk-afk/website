@@ -3,6 +3,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { deleteR2Object, listR2Objects, r2Configured } from "@/lib/r2";
 
 export const runtime = "nodejs";
+export const maxDuration = 30;
 
 export async function GET(req: Request) {
   if (!(await isAuthenticated())) {

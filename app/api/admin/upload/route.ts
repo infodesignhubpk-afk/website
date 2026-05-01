@@ -3,6 +3,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { buildKey, r2Configured, uploadR2Object } from "@/lib/r2";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const MAX_BYTES = 12 * 1024 * 1024; // 12 MB
 
