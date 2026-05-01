@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
-import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 import { caseStudies } from "@/data/case-studies";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
@@ -19,19 +19,16 @@ export const metadata: Metadata = buildMetadata({
 export default function CaseStudiesIndexPage() {
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
-        <Container>
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Case Studies", href: "/case-studies" }]} />
-          <div className="mt-8 max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Case studies</h1>
-            <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">
-              The longer-form story behind a few of our most-asked-about projects. Real brief, real approach, real numbers.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        title="Case studies"
+        description="The longer-form story behind a few of our most-asked-about projects. Real brief, real approach, real numbers."
+        breadcrumbs={[
+          { name: "Home", href: "/" },
+          { name: "Case Studies", href: "/case-studies" },
+        ]}
+      />
 
-      <Section surface="white">
+      <Section surface="white" className="pt-0">
         <Container>
           <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {caseStudies.map((c) => (

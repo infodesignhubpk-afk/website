@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
-import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 import { CartView } from "@/components/cart/CartView";
 import { buildMetadata } from "@/lib/seo";
 
@@ -15,19 +15,16 @@ export const metadata: Metadata = buildMetadata({
 export default function CartPage() {
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
-        <Container>
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Cart", href: "/cart" }]} />
-          <div className="mt-8 max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Your cart</h1>
-            <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">
-              Review your items and proceed to checkout. We&apos;ll confirm details by phone or WhatsApp before fulfilment.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        title="Your cart"
+        description="Review your items and proceed to checkout. We'll confirm details by phone or WhatsApp before fulfilment."
+        breadcrumbs={[
+          { name: "Home", href: "/" },
+          { name: "Cart", href: "/cart" },
+        ]}
+      />
 
-      <Section surface="white">
+      <Section surface="white" className="pt-0">
         <Container>
           <CartView />
         </Container>

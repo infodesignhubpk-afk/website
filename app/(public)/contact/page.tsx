@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
-import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { buildMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -25,19 +25,16 @@ export default async function ContactPage() {
 
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
-        <Container>
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Contact", href: "/contact" }]} />
-          <div className="mt-8 max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Talk to us</h1>
-            <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">
-              Whether you need a logo, a hoarding or a multi-month branding engagement — start with a quick message and we will reply within one working day.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        title="Talk to us"
+        description="Whether you need a logo, a hoarding or a multi-month branding engagement — start with a quick message and we will reply within one working day."
+        breadcrumbs={[
+          { name: "Home", href: "/" },
+          { name: "Contact", href: "/contact" },
+        ]}
+      />
 
-      <Section surface="white">
+      <Section surface="white" className="pt-0">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">

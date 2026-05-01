@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import { PageHero } from "@/components/ui/PageHero";
 import { services } from "@/data/services";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
@@ -30,21 +29,16 @@ const palettes: Record<ServiceCategory, string> = {
 export default function ServicesIndexPage() {
   return (
     <>
-      <Section surface="white" className="pt-12 pb-0 md:pt-16">
-        <Container>
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Services", href: "/services" }]} />
-          <div className="mt-8 max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Services
-            </h1>
-            <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">
-              Ten services that cover the full journey of a brand in Peshawar — from the first sketch of a logo to the last hoarding on Ring Road. Pick the closest match and we will scope from there.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        title="Services"
+        description="Ten services that cover the full journey of a brand in Peshawar — from the first sketch of a logo to the last hoarding on Ring Road. Pick the closest match and we will scope from there."
+        breadcrumbs={[
+          { name: "Home", href: "/" },
+          { name: "Services", href: "/services" },
+        ]}
+      />
 
-      <Section surface="white">
+      <Section surface="white" className="pt-0">
         <Container>
           <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => (
