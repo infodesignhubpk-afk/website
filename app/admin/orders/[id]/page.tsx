@@ -5,6 +5,7 @@ import { getOrderById } from "@/lib/admin/orders";
 import { PageTitle } from "@/components/admin/AdminUI";
 import { OrderRowActions } from "@/components/admin/OrderRowActions";
 import { ArrowRightIcon } from "@/components/ui/Icons";
+import { DELIVERY_LABELS, PAYMENT_LABELS } from "@/lib/orderValidation";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
     <div className="space-y-8">
       <PageTitle
         title={`Order ${order.reference}`}
-        description={`Created ${new Date(order.createdAt).toLocaleString()}`}
+        description={`Created ${new Date(order.createdAt).toISOString().slice(0, 16).replace("T", " ")} UTC`}
         actions={
           <Link href="/admin/orders" className="inline-flex items-center gap-2 text-sm font-semibold hover:underline">
             <ArrowRightIcon size={14} className="rotate-180" /> Back to orders
@@ -44,10 +45,20 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 </li>
               ))}
             </ul>
-            <div className="mt-4 flex items-center justify-between border-t border-line pt-4 text-base font-bold">
-              <span>Total</span>
-              <span>{order.currency} {order.totalAmount.toLocaleString()}</span>
-            </div>
+            <dl className="mt-4 space-y-1.5 border-t border-line pt-4 text-sm">
+              <div className="flex items-center justify-between">
+                <dt className="text-ink-soft">Subtotal</dt>
+                <dd className="font-semibold">{order.currency} {order.subtotal.toLocaleString()}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-ink-soft">Delivery</dt>
+                <dd className="font-semibold">{order.currency} {order.deliveryFee.toLocaleString()}</dd>
+              </div>
+              <div className="mt-2 flex items-center justify-between border-t border-line pt-3 text-base font-bold">
+                <dt>Total</dt>
+                <dd>{order.currency} {order.totalAmount.toLocaleString()}</dd>
+              </div>
+            </dl>
           </section>
 
           {order.notes ? (
@@ -87,6 +98,35 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 </div>
               ) : null}
             </dl>
+          </section>
+
+          <section className="rounded-2xl border border-line bg-bg p-6">
+            <h2 className="text-lg font-semibold tracking-tight">Delivery</h2>
+            <dl className="mt-4 space-y-3 text-sm">
+              <div>
+                <dt className="text-xs uppercase tracking-widest text-muted">Method</dt>
+                <dd className="mt-0.5 font-semibold">{DELIVERY_LABELS[order.deliveryMethod] ?? order.deliveryMethod}</dd>
+              </div>
+              {order.deliveryAddress ? (
+                <div>
+                  <dt className="text-xs uppercase tracking-widest text-muted">Address</dt>
+                  <dd className="mt-0.5 text-ink-soft">
+                    <p>{order.deliveryAddress.street}</p>
+                    <p>{order.deliveryAddress.city}{order.deliveryAddress.postalCode ? ` ${order.deliveryAddress.postalCode}` : ""}</p>
+                    {order.deliveryAddress.landmark ? <p className="text-muted">Landmark: {order.deliveryAddress.landmark}</p> : null}
+                  </dd>
+                </div>
+              ) : null}
+              <div>
+                <dt className="text-xs uppercase tracking-widest text-muted">Fee</dt>
+                <dd className="mt-0.5">{order.currency} {order.deliveryFee.toLocaleString()}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section className="rounded-2xl border border-line bg-bg p-6">
+            <h2 className="text-lg font-semibold tracking-tight">Payment</h2>
+            <p className="mt-4 text-sm font-semibold">{PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod}</p>
           </section>
 
           <section className="rounded-2xl border border-line bg-bg p-6">
