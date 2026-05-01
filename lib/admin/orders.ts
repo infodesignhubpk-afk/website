@@ -68,7 +68,7 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     paymentMethod: input.paymentMethod ?? "cod",
     createdAt: now,
     updatedAt: now,
-    source: input.source ?? "designhub.pk",
+    source: input.source ?? "designhub.com.pk",
   };
   await writeJson(FILE, [order, ...all]);
   return order;
