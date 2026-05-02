@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { portfolio } from "@/data/portfolio";
+import { portfolio as staticPortfolio } from "@/data/portfolio";
+import { listPublishedPortfolio } from "@/lib/admin/portfolio";
 import type { ServiceCategory } from "@/types";
 
 const palettes: Record<ServiceCategory, string> = {
@@ -23,7 +25,9 @@ const categoryLabels: Record<ServiceCategory, string> = {
   social: "Social",
 };
 
-export function PortfolioPreview() {
+export async function PortfolioPreview() {
+  const adminItems = await listPublishedPortfolio();
+  const portfolio = adminItems.length > 0 ? adminItems : staticPortfolio;
   const items = portfolio.slice(0, 6);
   return (
     <Section surface="white">
@@ -46,12 +50,23 @@ export function PortfolioPreview() {
                 href={`/portfolio/${item.slug}`}
                 className="group block overflow-hidden rounded-2xl border border-line"
               >
-                <div className={`aspect-[4/3] ${palettes[item.category]} relative overflow-hidden`}>
-                  <div className="absolute inset-0 grid place-items-center p-6 text-center">
-                    <span className={`text-3xl font-bold tracking-tight ${item.category === "branding" || item.category === "signage" || item.category === "social" ? "text-ink" : "text-white"}`}>
-                      {item.client}
-                    </span>
-                  </div>
+                <div className={`relative aspect-[4/3] overflow-hidden ${palettes[item.category]}`}>
+                  {item.image && /^https?:\/\//.test(item.image) ? (
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="absolute inset-0 grid place-items-center p-6 text-center">
+                      <span className={`text-3xl font-bold tracking-tight ${item.category === "branding" || item.category === "signage" || item.category === "social" ? "text-ink" : "text-white"}`}>
+                        {item.client}
+                      </span>
+                    </div>
+                  )}
                   <span className="absolute top-4 right-4 rounded-full bg-bg px-3 py-1 text-xs font-semibold uppercase tracking-wider text-ink">
                     {categoryLabels[item.category]}
                   </span>

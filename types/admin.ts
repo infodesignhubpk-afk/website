@@ -1,3 +1,5 @@
+import type { ServiceCategory } from "@/types";
+
 export type SiteSettings = {
   name: string;
   legalName: string;
@@ -97,6 +99,27 @@ export type DeliveryAddress = {
   city: string;
   postalCode?: string;
   landmark?: string;
+};
+
+export type AdminClient = {
+  id: string;
+  name: string;
+  logoUrl: string;
+  linkUrl?: string;
+  order: number;
+};
+
+export type AdminPortfolioItem = {
+  id: string;
+  slug: string;
+  title: string;
+  category: ServiceCategory;
+  client: string;
+  image: string;
+  summary: string;
+  description?: string;
+  year: number;
+  published: boolean;
 };
 
 export type Order = {

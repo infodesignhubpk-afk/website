@@ -4,7 +4,11 @@ import { notFound } from "next/navigation";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
-import { portfolio, getPortfolioItem } from "@/data/portfolio";
+import { RichText } from "@/components/ui/RichText";
+import { portfolio as staticPortfolio, getPortfolioItem as getStaticPortfolioItem } from "@/data/portfolio";
+import { listPublishedPortfolio, getPortfolioItemBySlug } from "@/lib/admin/portfolio";
+import type { PortfolioItem } from "@/types";
+import type { AdminPortfolioItem } from "@/types/admin";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -22,13 +26,20 @@ const palettes: Record<ServiceCategory, string> = {
 
 type Params = { slug: string };
 
-export function generateStaticParams(): Params[] {
-  return portfolio.map((p) => ({ slug: p.slug }));
+type AnyItem = PortfolioItem | AdminPortfolioItem;
+
+async function loadItem(slug: string): Promise<{ item: AnyItem | null; pool: AnyItem[] }> {
+  const adminItems = await listPublishedPortfolio();
+  if (adminItems.length > 0) {
+    const fromAdmin = await getPortfolioItemBySlug(slug);
+    return { item: fromAdmin && fromAdmin.published ? fromAdmin : null, pool: adminItems };
+  }
+  return { item: getStaticPortfolioItem(slug) ?? null, pool: staticPortfolio };
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
-  const item = getPortfolioItem(slug);
+  const { item } = await loadItem(slug);
   if (!item) return {};
   return buildMetadata({
     title: `${item.title} | Portfolio`,
@@ -39,10 +50,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function PortfolioItemPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const item = getPortfolioItem(slug);
+  const { item, pool } = await loadItem(slug);
   if (!item) notFound();
 
-  const others = portfolio.filter((p) => p.slug !== item.slug && p.category === item.category).slice(0, 3);
+  const others = pool.filter((p) => p.slug !== item.slug && p.category === item.category).slice(0, 3);
 
   return (
     <>
@@ -95,7 +106,7 @@ export default async function PortfolioItemPage({ params }: { params: Promise<Pa
                 </dl>
               </div>
               <div className="lg:col-span-8">
-                <p className="text-base md:text-lg leading-relaxed text-ink">{item.description}</p>
+                <RichText html={item.description} />
               </div>
             </div>
           </Container>
@@ -141,4 +152,3 @@ export default async function PortfolioItemPage({ params }: { params: Promise<Pa
   );
 }
 
-export const dynamicParams = false;

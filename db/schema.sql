@@ -56,3 +56,26 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at);
+
+CREATE TABLE IF NOT EXISTS clients (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_clients_sort ON clients(sort_order);
+
+CREATE TABLE IF NOT EXISTS portfolio_items (
+  id TEXT PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE,
+  data TEXT NOT NULL,
+  category TEXT NOT NULL,
+  year INTEGER NOT NULL,
+  published INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_portfolio_published ON portfolio_items(published);
+CREATE INDEX IF NOT EXISTS idx_portfolio_category ON portfolio_items(category);
+CREATE INDEX IF NOT EXISTS idx_portfolio_year ON portfolio_items(year);

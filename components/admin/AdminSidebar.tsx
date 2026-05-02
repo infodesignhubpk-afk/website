@@ -16,6 +16,8 @@ const sections: { heading: string; items: { href: string; label: string }[] }[] 
       { href: "/admin/blogs", label: "Blogs" },
       { href: "/admin/products", label: "Products" },
       { href: "/admin/categories", label: "Categories" },
+      { href: "/admin/portfolio", label: "Portfolio" },
+      { href: "/admin/clients", label: "Clients" },
       { href: "/admin/orders", label: "Orders" },
       { href: "/admin/media", label: "Media" },
     ],
