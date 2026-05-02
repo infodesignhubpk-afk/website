@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import NextTopLoader from "nextjs-toploader";
 import { Jost, Montserrat } from "next/font/google";
 import "./globals.css";
 import { getSite } from "@/lib/admin/site";
@@ -58,6 +59,14 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
       <body className="bg-bg text-ink antialiased" suppressHydrationWarning>
+        <NextTopLoader
+          color="#f5a732"
+          height={3}
+          showSpinner={false}
+          shadow="0 0 10px #f5a732,0 0 5px #f5a732"
+          easing="ease"
+          speed={300}
+        />
         {children}
 
         {gaId ? (
