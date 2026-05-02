@@ -13,6 +13,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbList } from "@/lib/schema";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { CheckIcon } from "@/components/ui/Icons";
+import { RichText } from "@/components/ui/RichText";
 import { absoluteUrl } from "@/lib/utils";
 import { getSite } from "@/lib/admin/site";
 
