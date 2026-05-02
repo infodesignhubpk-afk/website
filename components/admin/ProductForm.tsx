@@ -4,12 +4,14 @@ import { useActionState, useState } from "react";
 import { saveProductAction, type ProductActionResult } from "@/app/admin/_actions/products";
 import { AdminButton, Field, PageTitle, StatusToast, TextArea, TextInput } from "@/components/admin/AdminUI";
 import { ImageGalleryEditor } from "@/components/admin/ImageGalleryEditor";
+import { QuillEditor } from "@/components/admin/QuillEditor";
 import type { AdminCategory, AdminProduct } from "@/types/admin";
 
 export function ProductForm({ product, categories }: { product?: AdminProduct; categories: AdminCategory[] }) {
   const [state, action, pending] = useActionState<ProductActionResult, FormData>(saveProductAction, {});
   const [images, setImages] = useState<string[]>(product?.images ?? []);
   const [categoryIds, setCategoryIds] = useState<string[]>(product?.categoryIds ?? []);
+  const [description, setDescription] = useState(product?.description ?? "");
   const isEdit = Boolean(product);
 
   function toggleCategory(id: string) {

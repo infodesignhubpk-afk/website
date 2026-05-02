@@ -85,7 +85,7 @@ export type BlogPost = {
   date: string;
   author: string;
   readingMinutes: number;
-  body: string[];
+  body: string;
   image?: string;
 };
 

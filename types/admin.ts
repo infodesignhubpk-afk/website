@@ -43,7 +43,7 @@ export type AdminBlogPost = {
   date: string;
   author: string;
   readingMinutes: number;
-  body: string[];
+  body: string;
   image?: string;
   published: boolean;
   metaTitle?: string;

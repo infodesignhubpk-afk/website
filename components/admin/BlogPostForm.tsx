@@ -4,11 +4,13 @@ import { useActionState, useState } from "react";
 import { saveBlogPostAction, type BlogActionResult } from "@/app/admin/_actions/blogs";
 import { AdminButton, Field, PageTitle, StatusToast, TextArea, TextInput } from "@/components/admin/AdminUI";
 import { MediaPicker } from "@/components/admin/MediaPicker";
+import { QuillEditor } from "@/components/admin/QuillEditor";
 import type { AdminBlogPost } from "@/types/admin";
 
 export function BlogPostForm({ post }: { post?: AdminBlogPost }) {
   const [state, action, pending] = useActionState<BlogActionResult, FormData>(saveBlogPostAction, {});
   const [image, setImage] = useState(post?.image ?? "");
+  const [body, setBody] = useState(post?.body ?? "");
   const isEdit = Boolean(post);
 
   return (
@@ -38,8 +40,9 @@ export function BlogPostForm({ post }: { post?: AdminBlogPost }) {
               <Field label="Excerpt" htmlFor="excerpt" hint="Shown on the blog index and used as fallback meta description.">
                 <TextArea id="excerpt" name="excerpt" defaultValue={post?.excerpt} rows={2} />
               </Field>
-              <Field label="Body" htmlFor="body" required hint="Separate paragraphs with a blank line.">
-                <TextArea id="body" name="body" defaultValue={post?.body.join("\n\n")} rows={16} required />
+              <Field label="Body" htmlFor="body" required hint="Rich text — headings, bold, lists, links.">
+                <QuillEditor value={body} onChange={setBody} placeholder="Write the blog post…" minHeight={320} />
+                <input type="hidden" name="body" value={body} />
               </Field>
             </div>
           </section>
