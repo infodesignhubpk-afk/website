@@ -79,6 +79,17 @@ export async function Footer() {
         <Container className="flex flex-col items-start justify-between gap-3 py-6 text-xs text-white/60 md:flex-row md:items-center">
           <p>© {year} {site.legalName}. All rights reserved.</p>
           <p>Branding · Printing · Signage · Digital · Peshawar</p>
+          <p>
+            Developed by{" "}
+            <a
+              href="https://webspires.com.pk?utm=designhub"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-white/80 hover:text-brand"
+            >
+              Webspires
+            </a>
+          </p>
         </Container>
       </div>
     </footer>
