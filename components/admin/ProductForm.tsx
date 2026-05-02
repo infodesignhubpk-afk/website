@@ -43,8 +43,9 @@ export function ProductForm({ product, categories }: { product?: AdminProduct; c
               <Field label="Short description" htmlFor="shortDescription">
                 <TextArea id="shortDescription" name="shortDescription" defaultValue={product?.shortDescription} rows={2} />
               </Field>
-              <Field label="Full description" htmlFor="description">
-                <TextArea id="description" name="description" defaultValue={product?.description} rows={6} />
+              <Field label="Full description" htmlFor="description" hint="Rich text — headings, lists, links.">
+                <QuillEditor value={description} onChange={setDescription} placeholder="Tell customers about this product…" minHeight={240} />
+                <input type="hidden" name="description" value={description} />
               </Field>
               <Field label="Features (one per line)" htmlFor="features">
                 <TextArea id="features" name="features" defaultValue={product?.features.join("\n")} rows={6} />

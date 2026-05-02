@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { createProduct, deleteProduct, updateProduct } from "@/lib/admin/products";
+import { sanitizeRichText } from "@/components/ui/RichText";
 
 export type ProductActionResult = { ok?: boolean; error?: string };
 
@@ -46,7 +47,7 @@ export async function saveProductAction(prev: ProductActionResult, formData: For
     slug: s(formData, "slug"),
     name: s(formData, "name"),
     shortDescription: s(formData, "shortDescription"),
-    description: s(formData, "description"),
+    description: sanitizeRichText(s(formData, "description")),
     price: n(formData, "price"),
     currency: s(formData, "currency") || "PKR",
     categoryIds: jsonArray(formData, "categoryIds"),

@@ -132,7 +132,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<Pa
                 <h2 className="text-2xl font-semibold tracking-tight">About this product</h2>
               </div>
               <div className="lg:col-span-8">
-                <p className="whitespace-pre-wrap text-base md:text-lg leading-relaxed text-ink">{product.description}</p>
+                <RichText html={product.description} />
               </div>
             </div>
           ) : null}

@@ -2,13 +2,15 @@
 
 import { useActionState, useState } from "react";
 import { saveCategoryAction, type CategoryActionResult } from "@/app/admin/_actions/categories";
-import { AdminButton, Field, PageTitle, StatusToast, TextArea, TextInput } from "@/components/admin/AdminUI";
+import { AdminButton, Field, PageTitle, StatusToast, TextInput } from "@/components/admin/AdminUI";
 import { MediaPicker } from "@/components/admin/MediaPicker";
+import { QuillEditor } from "@/components/admin/QuillEditor";
 import type { AdminCategory } from "@/types/admin";
 
 export function CategoryForm({ category }: { category?: AdminCategory }) {
   const [state, action, pending] = useActionState<CategoryActionResult, FormData>(saveCategoryAction, {});
   const [image, setImage] = useState(category?.image ?? "");
+  const [description, setDescription] = useState(category?.description ?? "");
   const isEdit = Boolean(category);
   return (
     <form action={action} className="space-y-8">
@@ -25,8 +27,9 @@ export function CategoryForm({ category }: { category?: AdminCategory }) {
           <Field label="Name" htmlFor="name" required>
             <TextInput id="name" name="name" defaultValue={category?.name} required />
           </Field>
-          <Field label="Description" htmlFor="description">
-            <TextArea id="description" name="description" defaultValue={category?.description} rows={3} />
+          <Field label="Description" htmlFor="description" hint="Rich text — appears on the category page header.">
+            <QuillEditor value={description} onChange={setDescription} placeholder="Describe this category…" minHeight={180} />
+            <input type="hidden" name="description" value={description} />
           </Field>
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Slug (optional)" htmlFor="slug">

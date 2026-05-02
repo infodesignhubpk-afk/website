@@ -9,6 +9,7 @@ import {
   getBlogPostById,
   updateBlogPost,
 } from "@/lib/admin/blogs";
+import { sanitizeRichText } from "@/components/ui/RichText";
 
 export type BlogActionResult = { ok?: boolean; error?: string };
 
@@ -29,11 +30,8 @@ function n(fd: FormData, name: string, fallback = 0): number {
   return Number.isFinite(num) ? num : fallback;
 }
 
-function bodyParagraphs(input: string): string[] {
-  return input
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+function isEmptyHtml(html: string): boolean {
+  return html.replace(/<[^>]+>/g, "").trim().length === 0;
 }
 
 export async function saveBlogPostAction(prev: BlogActionResult, formData: FormData): Promise<BlogActionResult> {
@@ -46,7 +44,7 @@ export async function saveBlogPostAction(prev: BlogActionResult, formData: FormD
     date: s(formData, "date") || new Date().toISOString().slice(0, 10),
     author: s(formData, "author") || "Design Hub Studio",
     readingMinutes: n(formData, "readingMinutes", 5),
-    body: bodyParagraphs(s(formData, "body")),
+    body: sanitizeRichText(s(formData, "body")),
     image: s(formData, "image") || undefined,
     metaTitle: s(formData, "metaTitle") || undefined,
     metaDescription: s(formData, "metaDescription") || undefined,
@@ -54,7 +52,7 @@ export async function saveBlogPostAction(prev: BlogActionResult, formData: FormD
   };
 
   if (!payload.title) return { error: "Title is required." };
-  if (payload.body.length === 0) return { error: "Body is required." };
+  if (isEmptyHtml(payload.body)) return { error: "Body is required." };
 
   try {
     if (id) {

@@ -8,6 +8,7 @@ import {
   deleteCategory,
   updateCategory,
 } from "@/lib/admin/categories";
+import { sanitizeRichText } from "@/components/ui/RichText";
 
 export type CategoryActionResult = { ok?: boolean; error?: string };
 
@@ -29,7 +30,7 @@ export async function saveCategoryAction(prev: CategoryActionResult, formData: F
   const payload = {
     slug: s(formData, "slug"),
     name: s(formData, "name"),
-    description: s(formData, "description"),
+    description: sanitizeRichText(s(formData, "description")),
     image: s(formData, "image") || undefined,
     order: n(formData, "order", 999),
   };

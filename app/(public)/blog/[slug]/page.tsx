@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import { RichText } from "@/components/ui/RichText";
 import { listBlogPosts, getBlogPostBySlug } from "@/lib/admin/blogs";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
@@ -73,10 +74,8 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 
       <Section surface="white" className="pt-0">
         <Container className="max-w-3xl">
-          <article className="space-y-5 text-base md:text-lg leading-relaxed text-ink">
-            {post.body.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
+          <article>
+            <RichText html={post.body} />
           </article>
         </Container>
       </Section>
