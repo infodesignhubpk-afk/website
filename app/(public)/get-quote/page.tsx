@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbList } from "@/lib/schema";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Get a Free Quote | Design Hub Peshawar",
+  title: "Get a Quote | Design Hub Peshawar",
   description:
     "Brief us on your project in three short steps. Fixed-scope quote inside one working day. Branding, printing, signage and digital — Design Hub Peshawar.",
   path: "/get-quote",

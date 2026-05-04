@@ -16,7 +16,7 @@ export async function FinalCTA({
   title = "Ready to brief us on your next project?",
   description = "From a single banner to a multi-month branding engagement — start with a 10-minute call. No pressure, no proposals you didn't ask for.",
   primaryHref = "/get-quote",
-  primaryLabel = "Get a Free Quote",
+  primaryLabel = "Get a Quote",
   secondaryHref,
   secondaryLabel = "WhatsApp Us",
 }: Props) {
@@ -32,11 +32,20 @@ export async function FinalCTA({
               {description}
             </p>
           </div>
-          <div className="md:col-span-4 flex flex-wrap gap-3 md:justify-end">
-            <Button href={primaryHref} size="lg">
+          <div className="md:col-span-4 flex items-center gap-2 sm:gap-3 md:justify-end">
+            <Button
+              href={primaryHref}
+              size="lg"
+              className="flex-1 sm:flex-none max-sm:px-4 max-sm:py-2.5 max-sm:text-sm"
+            >
               {primaryLabel}
             </Button>
-            <Button href={whatsapp} variant="secondary" size="lg">
+            <Button
+              href={whatsapp}
+              variant="secondary"
+              size="lg"
+              className="flex-1 sm:flex-none max-sm:px-4 max-sm:py-2.5 max-sm:text-sm"
+            >
               {secondaryLabel}
             </Button>
           </div>

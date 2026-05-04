@@ -29,15 +29,20 @@ export async function Hero() {
             <p className="mt-6 max-w-2xl text-base md:text-xl leading-relaxed text-ink-soft">
               Logos, identity systems, brochures, hoardings, 3D signage, vehicle wraps and Meta ads — all from one studio. Designed locally, built to last, delivered on time.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button href="/get-quote" size="lg">
-                Get a Free Quote
+            <div className="mt-8 flex items-center gap-2 sm:gap-3">
+              <Button
+                href="/get-quote"
+                size="lg"
+                className="flex-1 sm:flex-none max-sm:px-4 max-sm:py-2.5 max-sm:text-sm"
+              >
+                Get a Quote
                 <ArrowRightIcon size={16} />
               </Button>
               <Button
                 href={whatsappLink(site.whatsappNumber, `Hi ${site.name}, I'd like to discuss a project.`)}
                 variant="secondary"
                 size="lg"
+                className="flex-1 sm:flex-none max-sm:px-4 max-sm:py-2.5 max-sm:text-sm"
               >
                 <WhatsAppIcon size={16} />
                 WhatsApp Us

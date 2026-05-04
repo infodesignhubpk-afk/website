@@ -35,14 +35,19 @@ export async function ServiceHero({ service }: Props) {
             <p className="mt-6 max-w-2xl text-base md:text-xl leading-relaxed text-ink-soft">
               {service.hero.subheading}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button href="#enquire" size="lg">
+            <div className="mt-8 flex items-center gap-2 sm:gap-3">
+              <Button
+                href="#enquire"
+                size="lg"
+                className="flex-1 sm:flex-none max-sm:px-4 max-sm:py-2.5 max-sm:text-sm"
+              >
                 {service.hero.ctaText}
               </Button>
               <Button
                 href={whatsappLink(site.whatsappNumber, `Hi, I would like to enquire about ${service.keyword} in Peshawar.`)}
                 variant="secondary"
                 size="lg"
+                className="flex-1 sm:flex-none max-sm:px-4 max-sm:py-2.5 max-sm:text-sm"
               >
                 WhatsApp Us
               </Button>
