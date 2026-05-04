@@ -146,17 +146,26 @@ export function ServiceIcon({ slug, size = 32, ...props }: Props) {
 
     case "facebook-ads-agency-peshawar":
       return (
-        <svg {...common}>
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden
+          {...props}
+        >
+          <defs>
+            <linearGradient id="meta-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#0081FB" />
+              <stop offset="50%" stopColor="#0064E1" />
+              <stop offset="100%" stopColor="#0046D6" />
+            </linearGradient>
+          </defs>
           <path
-            d="M4 13.5v5a1.4 1.4 0 0 0 1.4 1.4h3l9 5.6V6.5l-9 5.6h-3A1.4 1.4 0 0 0 4 13.5Z"
-            fill="currentColor"
-            fillOpacity="0.08"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinejoin="round"
+            fillRule="evenodd"
+            fill="url(#meta-grad)"
+            d="M8.217 5.243C9.145 3.988 10.171 3 11.483 3 13.96 3 16 6.153 16.001 9.907c0 2.29-.986 3.725-2.757 3.725-1.543 0-2.395-.866-3.924-3.424l-.667-1.123-.118-.197a55 55 0 0 0-.53-.877l-1.178 2.08c-1.673 2.925-2.615 3.541-3.923 3.541C1.086 13.632 0 12.217 0 9.973 0 6.388 1.995 3 4.598 3q.477-.001.924.122c.31.086.611.22.913.407.577.359 1.154.915 1.782 1.714m1.516 2.224q-.378-.615-.727-1.133L9 6.326c.845-1.305 1.543-1.954 2.372-1.954 1.723 0 3.102 2.537 3.102 5.653 0 1.188-.39 1.877-1.195 1.877-.773 0-1.142-.51-2.61-2.87zM4.846 4.756c.725.1 1.385.634 2.34 2.001A212 212 0 0 0 5.551 9.3c-1.357 2.126-1.826 2.603-2.581 2.603-.777 0-1.24-.682-1.24-1.9 0-2.602 1.298-5.264 2.846-5.264q.137 0 .27.018"
           />
-          <path d="M21 12c2 1.4 2 6.6 0 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          <path d="M24.5 9c3.4 2.2 3.4 11.8 0 14" stroke="var(--color-cta)" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
       );
 
