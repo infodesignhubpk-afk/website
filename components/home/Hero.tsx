@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { trustStats } from "@/data/site";
@@ -67,38 +68,79 @@ export async function Hero() {
   );
 }
 
+type HeroTile = {
+  src: string;
+  alt: string;
+  label: string;
+  caption: string;
+  offset: string;
+  toneClass: string;
+};
+
+const heroTiles: HeroTile[] = [
+  {
+    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777736164292-drbj4n-brand-identity.jpeg",
+    alt: "Brand identity work in progress",
+    label: "Identity",
+    caption: "Logo design + brand systems",
+    offset: "",
+    toneClass: "text-brand",
+  },
+  {
+    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777736182563-kh2yzg-printed-materials.jpeg",
+    alt: "Stack of printed materials and stationery",
+    label: "Print",
+    caption: "600+ print runs delivered",
+    offset: "mt-8",
+    toneClass: "text-brand",
+  },
+  {
+    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777736173183-ki1xef-flex-banner-branding.jpeg",
+    alt: "Outdoor flex banner signboard installation",
+    label: "Signboards",
+    caption: "Flex banners · Boards · Outdoor",
+    offset: "-mt-8",
+    toneClass: "text-brand",
+  },
+  {
+    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777729739972-9jxscw-portrait-vector.jpeg",
+    alt: "Vector illustration portrait used in social campaigns",
+    label: "Digital",
+    caption: "Meta Ads · Lead-gen for KP",
+    offset: "",
+    toneClass: "text-brand",
+  },
+];
+
 function HeroVisual() {
   return (
     <div className="relative mx-auto max-w-md lg:max-w-none">
       <div className="grid grid-cols-2 gap-3 md:gap-4">
-        <div className="aspect-[4/5] rounded-2xl bg-ink p-6 text-white flex flex-col justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wider text-brand">Identity</span>
-          <div>
-            <div className="grid h-16 w-16 place-items-center rounded-full bg-brand text-ink font-bold text-2xl">DH</div>
-            <p className="mt-3 text-sm leading-tight text-white/70">Logo design + brand systems</p>
+        {heroTiles.map((tile) => (
+          <div
+            key={tile.label}
+            className={`relative aspect-[4/5] overflow-hidden rounded-2xl border border-line ${tile.offset}`}
+          >
+            <Image
+              src={tile.src}
+              alt={tile.alt}
+              fill
+              priority
+              sizes="(max-width: 1024px) 50vw, 240px"
+              className="object-cover"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent"
+            />
+            <div className="absolute inset-x-4 bottom-4 flex flex-col gap-1 text-white">
+              <span className={`text-[10px] font-bold uppercase tracking-[0.2em] ${tile.toneClass}`}>
+                {tile.label}
+              </span>
+              <p className="text-sm font-semibold leading-tight">{tile.caption}</p>
+            </div>
           </div>
-        </div>
-        <div className="aspect-[4/5] rounded-2xl bg-brand p-6 text-ink flex flex-col justify-between mt-8">
-          <span className="text-xs font-semibold uppercase tracking-wider">Print</span>
-          <div>
-            <div className="text-3xl font-bold leading-none">600+</div>
-            <p className="mt-1 text-sm leading-tight">Print runs delivered</p>
-          </div>
-        </div>
-        <div className="aspect-[4/5] rounded-2xl bg-cta p-6 text-ink flex flex-col justify-between -mt-8">
-          <span className="text-xs font-semibold uppercase tracking-wider">Signage</span>
-          <div>
-            <div className="text-3xl font-bold leading-none">3D</div>
-            <p className="mt-1 text-sm leading-tight">Letters · Acrylic · Lightboxes</p>
-          </div>
-        </div>
-        <div className="aspect-[4/5] rounded-2xl border border-line bg-surface p-6 flex flex-col justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted">Digital</span>
-          <div>
-            <div className="text-3xl font-bold leading-none">Meta Ads</div>
-            <p className="mt-1 text-sm leading-tight text-ink-soft">Lead-gen for KP businesses</p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
