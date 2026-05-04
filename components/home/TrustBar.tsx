@@ -6,7 +6,26 @@ export async function TrustBar() {
   const clients = await listClients();
   if (clients.length === 0) return null;
 
-  const logos = [...clients, ...clients];
+  const useMarquee = clients.length >= 5;
+  const logos = useMarquee ? [...clients, ...clients] : clients;
+
+  const renderLogo = (c: (typeof clients)[number]) =>
+    c.logoUrl ? (
+      <div className="relative h-12 w-32 md:h-14 md:w-40">
+        <Image
+          src={c.logoUrl}
+          alt={c.name}
+          fill
+          sizes="160px"
+          className="object-contain"
+          unoptimized
+        />
+      </div>
+    ) : (
+      <span className="px-2 text-base font-semibold tracking-tight text-ink-soft md:text-lg">
+        {c.name}
+      </span>
+    );
 
   return (
     <section
@@ -30,36 +49,18 @@ export async function TrustBar() {
           </p>
         </div>
 
-        <div
-          className="group relative mt-10 overflow-hidden md:mt-14"
-          style={{
-            maskImage:
-              "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
-          }}
-        >
-          <ul
-            className="flex w-max items-center gap-3 animate-trustbar-marquee group-hover:[animation-play-state:paused]"
+        {useMarquee ? (
+          <div
+            className="group relative mt-10 overflow-hidden md:mt-14"
+            style={{
+              maskImage:
+                "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
+            }}
           >
-            {logos.map((c, i) => {
-              const inner = c.logoUrl ? (
-                <div className="relative h-12 w-32 md:h-14 md:w-40">
-                  <Image
-                    src={c.logoUrl}
-                    alt={c.name}
-                    fill
-                    sizes="160px"
-                    className="object-contain"
-                    unoptimized
-                  />
-                </div>
-              ) : (
-                <span className="px-2 text-base font-semibold tracking-tight text-ink-soft md:text-lg">
-                  {c.name}
-                </span>
-              );
-              return (
+            <ul className="flex w-max items-center gap-3 animate-trustbar-marquee group-hover:[animation-play-state:paused]">
+              {logos.map((c, i) => (
                 <li
                   key={`${c.id}-${i}`}
                   className="shrink-0 rounded-2xl border border-line bg-bg px-6 py-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-ink/20 hover:shadow-sm md:px-8 md:py-6"
@@ -72,16 +73,39 @@ export async function TrustBar() {
                       aria-label={c.name}
                       className="block opacity-80 transition-opacity hover:opacity-100"
                     >
-                      {inner}
+                      {renderLogo(c)}
                     </a>
                   ) : (
-                    <div className="opacity-80 transition-opacity hover:opacity-100">{inner}</div>
+                    <div className="opacity-80 transition-opacity hover:opacity-100">{renderLogo(c)}</div>
                   )}
                 </li>
-              );
-            })}
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <ul className="mx-auto mt-10 flex flex-wrap items-center justify-center gap-3 md:mt-14">
+            {logos.map((c) => (
+              <li
+                key={c.id}
+                className="rounded-2xl border border-line bg-bg px-6 py-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-ink/20 hover:shadow-sm md:px-8 md:py-6"
+              >
+                {c.linkUrl ? (
+                  <a
+                    href={c.linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={c.name}
+                    className="block opacity-80 transition-opacity hover:opacity-100"
+                  >
+                    {renderLogo(c)}
+                  </a>
+                ) : (
+                  <div className="opacity-80 transition-opacity hover:opacity-100">{renderLogo(c)}</div>
+                )}
+              </li>
+            ))}
           </ul>
-        </div>
+        )}
       </Container>
     </section>
   );
