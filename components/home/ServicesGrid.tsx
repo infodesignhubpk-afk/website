@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { services } from "@/data/services";
 import type { ServiceCategory } from "@/types";
 
@@ -42,9 +43,17 @@ export function ServicesGrid() {
                 href={`/services/${s.slug}`}
                 className={`group relative flex h-full flex-col justify-between gap-8 rounded-2xl p-6 md:p-8 transition-all duration-200 hover:-translate-y-1 ${categoryStyles[s.category]}`}
               >
-                <span className="text-xs font-semibold uppercase tracking-wider opacity-70">
-                  {s.category === "logo" ? "Identity" : s.category === "branding" ? "Branding" : s.category === "signage" ? "Signage" : s.category === "printing" ? "Print" : s.category === "vehicle" ? "Vehicle" : "Digital"}
-                </span>
+                <div className="flex items-start justify-between gap-4">
+                  <span className="text-xs font-semibold uppercase tracking-wider opacity-70">
+                    {s.category === "logo" ? "Identity" : s.category === "branding" ? "Branding" : s.category === "signage" ? "Signage" : s.category === "printing" ? "Print" : s.category === "vehicle" ? "Vehicle" : "Digital"}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-current/20 bg-current/5 backdrop-blur-sm transition-transform duration-200 group-hover:scale-105"
+                  >
+                    <ServiceIcon slug={s.slug} size={26} />
+                  </span>
+                </div>
                 <div>
                   <h3 className="text-xl font-semibold tracking-tight md:text-2xl">{s.keyword}</h3>
                   <p className="mt-2 text-sm leading-relaxed opacity-80">
