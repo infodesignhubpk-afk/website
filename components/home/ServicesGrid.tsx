@@ -3,16 +3,26 @@ import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
+import { ArrowRightIcon } from "@/components/ui/Icons";
 import { services } from "@/data/services";
 import type { ServiceCategory } from "@/types";
 
-const categoryStyles: Record<ServiceCategory, string> = {
-  logo: "bg-ink text-white",
-  branding: "bg-surface text-ink",
-  printing: "bg-bg text-ink border border-line",
-  signage: "bg-brand/30 text-ink",
-  vehicle: "bg-bg text-ink border border-line",
-  social: "bg-ink text-white",
+const categoryLabel: Record<ServiceCategory, string> = {
+  logo: "Identity",
+  branding: "Branding",
+  printing: "Print",
+  signage: "Signage",
+  vehicle: "Vehicle",
+  social: "Digital",
+};
+
+const iconBadgeStyle: Record<ServiceCategory, string> = {
+  logo: "bg-gradient-to-br from-ink to-ink-soft text-brand",
+  branding: "bg-gradient-to-br from-brand/30 to-brand/10 text-ink",
+  printing: "bg-gradient-to-br from-cta/25 to-cta/5 text-ink",
+  signage: "bg-gradient-to-br from-brand/40 to-brand/15 text-ink",
+  vehicle: "bg-gradient-to-br from-ink to-ink-soft text-brand",
+  social: "bg-gradient-to-br from-cta/30 to-brand/15 text-ink",
 };
 
 export function ServicesGrid() {
@@ -30,40 +40,53 @@ export function ServicesGrid() {
             className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold tracking-tight text-ink hover:underline"
           >
             See all services
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <ArrowRightIcon size={14} />
           </Link>
         </div>
 
-        <ul className="mt-12 grid gap-4 md:mt-16 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-12 grid gap-5 md:mt-16 md:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
             <li key={s.slug}>
               <Link
                 href={`/services/${s.slug}`}
-                className={`group relative flex h-full flex-col justify-between gap-8 rounded-2xl p-6 md:p-8 transition-all duration-200 hover:-translate-y-1 ${categoryStyles[s.category]}`}
+                className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-bg p-6 transition-all duration-300 hover:-translate-y-1 hover:border-ink/20 hover:shadow-[0_20px_40px_-20px_rgba(0,0,0,0.15)] md:p-7"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <span className="text-xs font-semibold uppercase tracking-wider opacity-70">
-                    {s.category === "logo" ? "Identity" : s.category === "branding" ? "Branding" : s.category === "signage" ? "Signage" : s.category === "printing" ? "Print" : s.category === "vehicle" ? "Vehicle" : "Digital"}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-brand/10 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+                />
+
+                <div className="flex items-center justify-between gap-4">
+                  <span
+                    className={`relative grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl ${iconBadgeStyle[s.category]} shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[-2deg]`}
+                  >
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_30%_20%,_rgba(255,255,255,0.5)_0%,_rgba(255,255,255,0)_60%)]"
+                    />
+                    <ServiceIcon slug={s.slug} size={34} className="relative" />
+                  </span>
+                  <span className="rounded-full border border-line px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-ink-soft">
+                    {categoryLabel[s.category]}
+                  </span>
+                </div>
+
+                <div className="mt-7 flex flex-1 flex-col">
+                  <h3 className="text-xl font-bold tracking-tight md:text-2xl">{s.keyword}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-soft md:text-[15px]">
+                    {s.metaDescription.split(".")[0]}.
+                  </p>
+                </div>
+
+                <div className="mt-6 flex items-center justify-between border-t border-line pt-5">
+                  <span className="text-sm font-semibold tracking-tight text-ink">
+                    Learn more
                   </span>
                   <span
                     aria-hidden
-                    className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-current/20 bg-current/5 backdrop-blur-sm transition-transform duration-200 group-hover:scale-105"
+                    className="grid h-8 w-8 place-items-center rounded-full border border-line text-ink transition-all duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-bg"
                   >
-                    <ServiceIcon slug={s.slug} size={26} />
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold tracking-tight md:text-2xl">{s.keyword}</h3>
-                  <p className="mt-2 text-sm leading-relaxed opacity-80">
-                    {s.metaDescription.split(".")[0]}.
-                  </p>
-                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold">
-                    Learn more
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="transition-transform group-hover:translate-x-1">
-                      <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <ArrowRightIcon size={14} />
                   </span>
                 </div>
               </Link>
