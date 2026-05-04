@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ArrowRightIcon } from "@/components/ui/Icons";
@@ -28,10 +29,20 @@ export default async function NotFound() {
           />
           <Container>
             <div className="mx-auto max-w-3xl text-center">
-              <p className="inline-flex items-center gap-2 rounded-full border border-line bg-bg px-3 py-1 text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              <div className="relative mx-auto aspect-[4/3] w-full max-w-xl">
+                <Image
+                  src="https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777736169164-6u6q4g-eror-404.jpeg"
+                  alt="404 — page not found"
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 90vw, 576px"
+                  className="object-contain"
+                />
+              </div>
+              <p className="mt-2 inline-flex items-center gap-2 rounded-full border border-line bg-bg px-3 py-1 text-xs font-semibold uppercase tracking-wider text-ink-soft">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand" /> 404 · Page not found
               </p>
-              <h1 className="mt-6 text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight">
+              <h1 className="mt-6 text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
                 We can&apos;t find <span className="bg-brand px-2 -mx-1 inline-block">that page</span>
               </h1>
               <p className="mt-6 text-base md:text-xl leading-relaxed text-ink-soft">
