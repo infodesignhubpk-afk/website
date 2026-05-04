@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { navLinks } from "@/data/site";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/layout/Logo";
 import { PhoneIcon } from "@/components/ui/Icons";
@@ -35,9 +34,6 @@ export async function Header() {
             <PhoneIcon size={18} />
           </a>
           <CartIcon />
-          <Button href="/get-quote" size="md" className="hidden md:inline-flex">
-            Get a Quote
-          </Button>
         </div>
       </Container>
     </header>
