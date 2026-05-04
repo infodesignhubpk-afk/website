@@ -53,7 +53,7 @@ export function MobileMenu({ links, phone, phoneDisplay, whatsappNumber, siteNam
 
       <div
         aria-hidden={!open}
-        className={`fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm transition-opacity duration-200 md:hidden ${
+        className={`fixed inset-0 z-[999] bg-ink/40 backdrop-blur-sm transition-opacity duration-200 md:hidden ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setOpen(false)}
@@ -64,7 +64,7 @@ export function MobileMenu({ links, phone, phoneDisplay, whatsappNumber, siteNam
         role="dialog"
         aria-modal="true"
         aria-label="Site navigation"
-        className={`fixed inset-y-0 right-0 z-50 flex w-[85%] max-w-sm flex-col bg-bg shadow-2xl transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed inset-y-0 right-0 z-[999] flex w-[85%] max-w-sm flex-col bg-bg shadow-2xl transition-transform duration-300 ease-out md:hidden ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
