@@ -16,6 +16,13 @@
   --font-body: var(--font-body), "Gotham", "Montserrat", system-ui, sans-serif;
 
   --radius-2xl: 1rem;
+
+  --animate-trustbar-marquee: trustbar-marquee 40s linear infinite;
+}
+
+@keyframes trustbar-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @layer base {
