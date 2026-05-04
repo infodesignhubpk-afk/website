@@ -16,7 +16,7 @@ export default async function AdminClientsPage() {
     <div className="space-y-8">
       <PageTitle
         title="Clients"
-        description="Logos shown in the homepage trust bar. Drag-equivalent: edit Display Order to re-arrange."
+        description="Logos shown in the homepage trust bar."
         actions={
           <Link href="/admin/clients/new">
             <AdminButton variant="primary"><PlusIcon size={16} /> New client</AdminButton>
@@ -30,7 +30,6 @@ export default async function AdminClientsPage() {
             <tr>
               <th className="px-5 py-3 font-semibold">Logo</th>
               <th className="px-5 py-3 font-semibold">Name</th>
-              <th className="px-5 py-3 font-semibold">Order</th>
               <th className="px-5 py-3 text-right font-semibold">Actions</th>
             </tr>
           </thead>
@@ -54,7 +53,6 @@ export default async function AdminClientsPage() {
                     </a>
                   ) : null}
                 </td>
-                <td className="px-5 py-4 text-sm">{c.order}</td>
                 <td className="px-5 py-4 text-right">
                   <ClientRowActions id={c.id} />
                 </td>
@@ -62,7 +60,7 @@ export default async function AdminClientsPage() {
             ))}
             {clients.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-5 py-12 text-center text-muted">
+                <td colSpan={3} className="px-5 py-12 text-center text-muted">
                   No clients yet. Add one and it will appear in the trust bar on the homepage.
                 </td>
               </tr>

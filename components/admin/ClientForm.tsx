@@ -35,9 +35,6 @@ export function ClientForm({ client }: { client?: AdminClient }) {
           <Field label="Website (optional)" htmlFor="linkUrl">
             <TextInput id="linkUrl" name="linkUrl" type="url" defaultValue={client?.linkUrl} placeholder="https://" />
           </Field>
-          <Field label="Display order" htmlFor="order" hint="Lower numbers show first.">
-            <TextInput id="order" name="order" type="number" defaultValue={client?.order ?? 999} />
-          </Field>
         </section>
 
         <aside className="space-y-5 rounded-2xl border border-line bg-bg p-6">
