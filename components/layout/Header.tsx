@@ -38,9 +38,6 @@ export async function Header() {
           <Button href="/get-quote" size="md" className="hidden md:inline-flex">
             Get a Quote
           </Button>
-          <Button href="/contact" variant="ink" size="md" className="md:hidden">
-            Contact
-          </Button>
         </div>
       </Container>
     </header>
