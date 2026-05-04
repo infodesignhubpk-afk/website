@@ -2,9 +2,9 @@ import Link from "next/link";
 import { navLinks } from "@/data/site";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/layout/Logo";
-import { PhoneIcon } from "@/components/ui/Icons";
 import { getSite } from "@/lib/admin/site";
 import { CartIcon } from "@/components/cart/CartIcon";
+import { MobileMenu } from "@/components/layout/MobileMenu";
 
 export async function Header() {
   const site = await getSite();
@@ -26,14 +26,14 @@ export async function Header() {
         </nav>
 
         <div className="flex items-center gap-2 md:gap-3">
-          <a
-            href={`tel:${site.phone}`}
-            aria-label={`Call ${site.phoneDisplay}`}
-            className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink hover:border-ink md:hidden"
-          >
-            <PhoneIcon size={18} />
-          </a>
           <CartIcon />
+          <MobileMenu
+            links={navLinks}
+            phone={site.phone}
+            phoneDisplay={site.phoneDisplay}
+            whatsappNumber={site.whatsappNumber}
+            siteName={site.name}
+          />
         </div>
       </Container>
     </header>
