@@ -16,11 +16,7 @@ export function ProcessSteps() {
       />
       <div
         aria-hidden
-        className="absolute inset-0 bg-ink/85"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/40 to-ink/70"
+        className="absolute inset-0 bg-ink/80"
       />
       <Container className="relative">
         <div className="max-w-3xl">
