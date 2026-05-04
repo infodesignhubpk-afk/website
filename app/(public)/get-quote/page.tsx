@@ -18,7 +18,7 @@ export default function GetQuotePage() {
   return (
     <>
       <PageHero
-        title="Get a free quote"
+        title="Get a quote"
         description="Three short steps. We will reply within one working day with a fixed-scope quote, project plan and timeline."
         breadcrumbs={[
           { name: "Home", href: "/" },

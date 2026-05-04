@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/data/site";
 import { services } from "@/data/services";
-import { portfolio } from "@/data/portfolio";
+import { portfolio as staticPortfolio } from "@/data/portfolio";
+import { listPublishedPortfolio } from "@/lib/admin/portfolio";
 import { caseStudies } from "@/data/case-studies";
 import { listPublishedPosts } from "@/lib/admin/blogs";
 import { listPublishedProducts } from "@/lib/admin/products";
@@ -39,6 +40,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
+  const adminPortfolio = await listPublishedPortfolio();
+  const portfolio = adminPortfolio.length > 0 ? adminPortfolio : staticPortfolio;
   const portfolioEntries: MetadataRoute.Sitemap = portfolio.map((p) => ({
     url: `${base}/portfolio/${p.slug}`,
     lastModified: now,

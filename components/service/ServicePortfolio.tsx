@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { portfolio } from "@/data/portfolio";
+import { portfolio as staticPortfolio } from "@/data/portfolio";
+import { listPublishedPortfolio } from "@/lib/admin/portfolio";
 import type { ServiceCategory } from "@/types";
 
 const palettes: Record<ServiceCategory, string> = {
@@ -16,7 +18,9 @@ const palettes: Record<ServiceCategory, string> = {
 
 type Props = { category: ServiceCategory };
 
-export function ServicePortfolio({ category }: Props) {
+export async function ServicePortfolio({ category }: Props) {
+  const adminItems = await listPublishedPortfolio();
+  const portfolio = adminItems.length > 0 ? adminItems : staticPortfolio;
   const items = portfolio.filter((p) => p.category === category).slice(0, 6);
   if (items.length === 0) return null;
   return (
@@ -38,10 +42,21 @@ export function ServicePortfolio({ category }: Props) {
                 href={`/portfolio/${item.slug}`}
                 className="group block overflow-hidden rounded-2xl border border-line"
               >
-                <div className={`aspect-[4/3] ${palettes[item.category]}`}>
-                  <div className="grid h-full place-items-center p-6 text-center">
-                    <span className="text-2xl font-bold tracking-tight">{item.client}</span>
-                  </div>
+                <div className={`relative aspect-[4/3] overflow-hidden ${palettes[item.category]}`}>
+                  {item.image && /^https?:\/\//.test(item.image) ? (
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="grid h-full place-items-center p-6 text-center">
+                      <span className="text-2xl font-bold tracking-tight">{item.client}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="bg-bg p-5">
                   <h3 className="text-base font-semibold tracking-tight">{item.title}</h3>
