@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { portfolio as staticPortfolio } from "@/data/portfolio";
 import { listPublishedPortfolio } from "@/lib/admin/portfolio";
 import type { ServiceCategory } from "@/types";
 
@@ -26,9 +25,8 @@ const categoryLabels: Record<ServiceCategory, string> = {
 };
 
 export async function PortfolioPreview() {
-  const adminItems = await listPublishedPortfolio();
-  const portfolio = adminItems.length > 0 ? adminItems : staticPortfolio;
-  const items = portfolio.slice(0, 6);
+  const items = (await listPublishedPortfolio()).slice(0, 6);
+  if (items.length === 0) return null;
   return (
     <Section surface="white">
       <Container>

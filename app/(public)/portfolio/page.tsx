@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
-import { portfolio as staticPortfolio } from "@/data/portfolio";
 import { listPublishedPortfolio } from "@/lib/admin/portfolio";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
@@ -52,8 +51,7 @@ export default async function PortfolioPage({
 }) {
   const sp = await searchParams;
   const active: Filter = isFilter(sp.category) ? sp.category : "all";
-  const adminItems = await listPublishedPortfolio();
-  const portfolio = adminItems.length > 0 ? adminItems : staticPortfolio;
+  const portfolio = await listPublishedPortfolio();
   const items = active === "all" ? portfolio : portfolio.filter((p) => p.category === active);
 
   return (
