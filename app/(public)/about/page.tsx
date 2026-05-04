@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -48,25 +49,47 @@ export default async function AboutPage() {
       <Section surface="white" className="pt-8 pb-10 md:pt-12 md:pb-12">
         <Container>
           <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "About", href: "/about" }]} />
-          <div className="mt-5 grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-8">
+          <div className="mt-6 grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-7">
               <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
                 A Peshawar studio building brands that work outside the screen.
               </h1>
-              <p className="mt-3 max-w-3xl text-base md:text-lg leading-relaxed text-ink-soft">
+              <p className="mt-5 max-w-2xl text-base md:text-lg leading-relaxed text-ink-soft">
                 {site.name} started in {site.founded} with a simple idea: a Peshawar business should not have to coordinate five vendors to get a logo, a banner, a signboard and a social campaign that look like they belong to the same brand. Seven years and {trustStats[0].value} projects later, that is still what we do — under one roof.
               </p>
-            </div>
-            <aside className="lg:col-span-4">
-              <dl className="grid grid-cols-3 gap-6 lg:grid-cols-1">
+              <dl className="mt-8 grid grid-cols-3 gap-6 border-t border-line pt-6 max-w-xl">
                 {trustStats.map((s) => (
-                  <div key={s.label} className="border-l-2 border-brand pl-4">
+                  <div key={s.label}>
                     <dt className="text-xs uppercase tracking-wider text-muted">{s.label}</dt>
                     <dd className="mt-1 text-2xl font-bold tracking-tight md:text-3xl">{s.value}</dd>
                   </div>
                 ))}
               </dl>
-            </aside>
+            </div>
+            <div className="lg:col-span-5">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-line bg-surface">
+                <Image
+                  src="https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777736380870-4rfl3k-receptionist-smiling-at-studio-f-202605022038-1.jpeg"
+                  alt={`${site.name} studio reception in Peshawar`}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover"
+                />
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/40 to-transparent"
+                />
+                <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3">
+                  <span className="grid h-9 w-9 place-items-center rounded-full border border-white/30 bg-white/15 text-xs font-bold uppercase tracking-wider text-white backdrop-blur">
+                    DH
+                  </span>
+                  <p className="text-sm font-semibold leading-tight text-white">
+                    Studio reception · University Road, Peshawar
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </Container>
       </Section>
