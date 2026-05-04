@@ -8,7 +8,6 @@ import {
   deletePortfolioItem,
   updatePortfolioItem,
 } from "@/lib/admin/portfolio";
-import { sanitizeRichText } from "@/components/ui/RichText";
 import type { ServiceCategory } from "@/types";
 
 export type PortfolioActionResult = { ok?: boolean; error?: string };
@@ -59,7 +58,7 @@ export async function savePortfolioItemAction(
     client: s(formData, "client"),
     image: s(formData, "image"),
     summary: s(formData, "summary"),
-    description: sanitizeRichText(s(formData, "description")) || undefined,
+    description: s(formData, "description") || undefined,
     year: n(formData, "year", new Date().getFullYear()),
     published: bool(formData, "published"),
   };
