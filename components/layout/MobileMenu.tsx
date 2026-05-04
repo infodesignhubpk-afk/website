@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CloseIcon, MenuIcon, PhoneIcon, WhatsAppIcon } from "@/components/ui/Icons";
@@ -18,7 +19,12 @@ type Props = {
 
 export function MobileMenu({ links, phone, phoneDisplay, whatsappNumber, siteName }: Props) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setOpen(false);
@@ -38,25 +44,15 @@ export function MobileMenu({ links, phone, phoneDisplay, whatsappNumber, siteNam
     };
   }, [open]);
 
-  return (
-    <>
-      <button
-        type="button"
-        aria-label="Open menu"
-        aria-expanded={open}
-        aria-controls="mobile-menu-drawer"
-        onClick={() => setOpen(true)}
-        className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink hover:border-ink md:hidden"
-      >
-        <MenuIcon size={18} />
-      </button>
-
+  const drawer = (
+    <div className="md:hidden">
       <div
         aria-hidden={!open}
-        className={`fixed inset-0 z-[999] bg-ink/40 backdrop-blur-sm transition-opacity duration-200 md:hidden ${
+        onClick={() => setOpen(false)}
+        style={{ zIndex: 999 }}
+        className={`fixed inset-0 bg-black/50 transition-opacity duration-200 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
-        onClick={() => setOpen(false)}
       />
 
       <aside
@@ -64,7 +60,8 @@ export function MobileMenu({ links, phone, phoneDisplay, whatsappNumber, siteNam
         role="dialog"
         aria-modal="true"
         aria-label="Site navigation"
-        className={`fixed inset-y-0 right-0 z-[999] flex w-[85%] max-w-sm flex-col bg-bg shadow-2xl transition-transform duration-300 ease-out md:hidden ${
+        style={{ zIndex: 1000, backgroundColor: "#ffffff" }}
+        className={`fixed inset-y-0 right-0 flex w-[85%] max-w-sm flex-col shadow-2xl transition-transform duration-300 ease-out ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -128,6 +125,22 @@ export function MobileMenu({ links, phone, phoneDisplay, whatsappNumber, siteNam
           </div>
         </div>
       </aside>
+    </div>
+  );
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-label="Open menu"
+        aria-expanded={open}
+        aria-controls="mobile-menu-drawer"
+        onClick={() => setOpen(true)}
+        className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink hover:border-ink md:hidden"
+      >
+        <MenuIcon size={18} />
+      </button>
+      {mounted ? createPortal(drawer, document.body) : null}
     </>
   );
 }
