@@ -5,9 +5,7 @@ import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { RichText } from "@/components/ui/RichText";
-import { portfolio as staticPortfolio, getPortfolioItem as getStaticPortfolioItem } from "@/data/portfolio";
 import { listPublishedPortfolio, getPortfolioItemBySlug } from "@/lib/admin/portfolio";
-import type { PortfolioItem } from "@/types";
 import type { AdminPortfolioItem } from "@/types/admin";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
@@ -26,15 +24,10 @@ const palettes: Record<ServiceCategory, string> = {
 
 type Params = { slug: string };
 
-type AnyItem = PortfolioItem | AdminPortfolioItem;
-
-async function loadItem(slug: string): Promise<{ item: AnyItem | null; pool: AnyItem[] }> {
-  const adminItems = await listPublishedPortfolio();
-  if (adminItems.length > 0) {
-    const fromAdmin = await getPortfolioItemBySlug(slug);
-    return { item: fromAdmin && fromAdmin.published ? fromAdmin : null, pool: adminItems };
-  }
-  return { item: getStaticPortfolioItem(slug) ?? null, pool: staticPortfolio };
+async function loadItem(slug: string): Promise<{ item: AdminPortfolioItem | null; pool: AdminPortfolioItem[] }> {
+  const pool = await listPublishedPortfolio();
+  const item = await getPortfolioItemBySlug(slug);
+  return { item: item && item.published ? item : null, pool };
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {

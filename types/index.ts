@@ -41,16 +41,6 @@ export type Service = {
   relatedSlugs: string[];
 };
 
-export type PortfolioItem = {
-  slug: string;
-  title: string;
-  category: ServiceCategory;
-  client: string;
-  image: string;
-  summary: string;
-  description?: string;
-  year: number;
-};
 
 export type Testimonial = {
   name: string;
