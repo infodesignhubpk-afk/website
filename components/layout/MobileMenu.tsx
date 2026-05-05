@@ -23,10 +23,14 @@ export function MobileMenu({ links, phone, phoneDisplay, whatsappNumber, siteNam
   const pathname = usePathname();
 
   useEffect(() => {
+    // SSR-safe portal mount flag.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
   useEffect(() => {
+    // Close drawer on route change.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(false);
   }, [pathname]);
 

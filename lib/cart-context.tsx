@@ -61,7 +61,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // One-time hydration from localStorage on mount; SSR returns [] to avoid mismatch.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(readStored());
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHydrated(true);
   }, []);
 
