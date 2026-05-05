@@ -1,40 +1,7 @@
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeRichText } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 
-const ALLOWED_TAGS = [
-  "p",
-  "br",
-  "strong",
-  "em",
-  "u",
-  "s",
-  "h2",
-  "h3",
-  "ul",
-  "ol",
-  "li",
-  "a",
-  "blockquote",
-  "code",
-  "pre",
-  "span",
-];
-
-const ALLOWED_ATTR = ["href", "target", "rel"];
-
-export function sanitizeRichText(html: string): string {
-  if (!html) return "";
-  try {
-    return DOMPurify.sanitize(html, {
-      ALLOWED_TAGS,
-      ALLOWED_ATTR,
-      ALLOW_DATA_ATTR: false,
-    });
-  } catch (err) {
-    console.warn("[sanitizeRichText] DOMPurify failed, falling back to text:", err);
-    return html.replace(/<[^>]*>/g, "");
-  }
-}
+export { sanitizeRichText };
 
 type Props = {
   html: string | null | undefined;
