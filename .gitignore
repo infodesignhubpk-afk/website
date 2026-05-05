@@ -43,4 +43,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local data stores
 data-store/
+
+# editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude Code local state (worktrees, settings, transcripts)
+.claude/
+.claude-cache/
+
+# logs
+*.log
+logs/

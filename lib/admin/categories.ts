@@ -23,9 +23,31 @@ const seed: AdminCategory[] = [
   { id: "cat_seed_branding", slug: "branding-bundles", name: "Branding Bundles", description: "Bundled identity packages for new businesses and refresh projects.", order: 3 },
 ];
 
+let tableEnsured = false;
+async function ensureTable(): Promise<void> {
+  if (tableEnsured || !d1Configured) return;
+  try {
+    await d1Exec(
+      `CREATE TABLE IF NOT EXISTS categories (
+        id TEXT PRIMARY KEY,
+        slug TEXT NOT NULL UNIQUE,
+        data TEXT NOT NULL,
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )`,
+    );
+    await d1Exec("CREATE INDEX IF NOT EXISTS idx_categories_sort ON categories(sort_order)");
+    tableEnsured = true;
+  } catch (err) {
+    console.warn("[categories] ensureTable failed:", err);
+  }
+}
+
 let _seeded = false;
 async function ensureSeed(): Promise<void> {
   if (_seeded || !d1Configured) return;
+  await ensureTable();
   try {
     const rows = await d1All<{ count: number }>("SELECT COUNT(*) AS count FROM categories");
     if ((rows[0]?.count ?? 0) > 0) {

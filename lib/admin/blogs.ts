@@ -19,9 +19,33 @@ function rowToPost(row: BlogRow): AdminBlogPost {
   return { ...parsed, id: row.id, slug: row.slug, published: row.published === 1 };
 }
 
+let tableEnsured = false;
+async function ensureTable(): Promise<void> {
+  if (tableEnsured || !d1Configured) return;
+  try {
+    await d1Exec(
+      `CREATE TABLE IF NOT EXISTS blogs (
+        id TEXT PRIMARY KEY,
+        slug TEXT NOT NULL UNIQUE,
+        data TEXT NOT NULL,
+        published INTEGER NOT NULL DEFAULT 0,
+        date TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )`,
+    );
+    await d1Exec("CREATE INDEX IF NOT EXISTS idx_blogs_published ON blogs(published)");
+    await d1Exec("CREATE INDEX IF NOT EXISTS idx_blogs_date ON blogs(date)");
+    tableEnsured = true;
+  } catch (err) {
+    console.warn("[blogs] ensureTable failed:", err);
+  }
+}
+
 let _seeded = false;
 async function ensureSeed(): Promise<void> {
   if (_seeded || !d1Configured) return;
+  await ensureTable();
   try {
     const rows = await d1All<{ count: number }>("SELECT COUNT(*) AS count FROM blogs");
     if ((rows[0]?.count ?? 0) > 0) {
