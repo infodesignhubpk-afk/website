@@ -9,7 +9,6 @@ import {
   getBlogPostById,
   updateBlogPost,
 } from "@/lib/admin/blogs";
-import { sanitizeRichText } from "@/components/ui/RichText";
 
 export type BlogActionResult = { ok?: boolean; error?: string };
 
@@ -44,7 +43,7 @@ export async function saveBlogPostAction(prev: BlogActionResult, formData: FormD
     date: s(formData, "date") || new Date().toISOString().slice(0, 10),
     author: s(formData, "author") || "Design Hub Studio",
     readingMinutes: n(formData, "readingMinutes", 5),
-    body: sanitizeRichText(s(formData, "body")),
+    body: s(formData, "body"),
     image: s(formData, "image") || undefined,
     metaTitle: s(formData, "metaTitle") || undefined,
     metaDescription: s(formData, "metaDescription") || undefined,
