@@ -101,9 +101,22 @@ export function PortfolioForm({ item }: { item?: AdminPortfolioItem }) {
 
           <section className="rounded-2xl border border-line bg-bg p-6">
             <h2 className="text-lg font-semibold tracking-tight">Cover image</h2>
-            <div className="mt-5">
-              <MediaPicker label="Cover" value={image} onChange={setImage} folder="portfolio" recommended="1600×1200 JPG/PNG" />
+            <div className="mt-5 space-y-3">
+              <MediaPicker
+                label="Cover"
+                value={image}
+                onChange={setImage}
+                folder="portfolio"
+                recommended="1600×1200 px (4:3)"
+                hint="Cards display the full image (no cropping). For a clean grid, upload a 4:3 image — ideally 1600×1200 px JPG/PNG, under 500 KB. Transparent or white backgrounds look best."
+              />
               <input type="hidden" name="image" value={image} />
+              <ul className="space-y-1.5 rounded-xl border border-line bg-surface p-4 text-xs text-ink-soft">
+                <li><span className="font-semibold text-ink">Aspect ratio:</span> 4:3 (e.g. 1600×1200, 1200×900, 800×600)</li>
+                <li><span className="font-semibold text-ink">Format:</span> JPG or PNG, under 500 KB</li>
+                <li><span className="font-semibold text-ink">Background:</span> transparent PNG or solid white for the cleanest look</li>
+                <li><span className="font-semibold text-ink">Subject:</span> centred with a small margin — cards add 16 px padding</li>
+              </ul>
             </div>
           </section>
         </aside>
