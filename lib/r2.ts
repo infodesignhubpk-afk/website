@@ -122,7 +122,7 @@ export async function r2ObjectExists(key: string): Promise<boolean> {
 }
 
 export async function presignedGetUrl(key: string, expiresInSeconds = 3600): Promise<string> {
-  return getSignedUrl(client(), new PutObjectCommand({ Bucket: bucket, Key: key }), {
+  return getSignedUrl(client(), new GetObjectCommand({ Bucket: bucket, Key: key }), {
     expiresIn: expiresInSeconds,
   });
 }

@@ -50,7 +50,7 @@ export async function POST(req: Request) {
       console.error("Lead webhook failed:", err);
     }
   } else {
-    console.log("[lead] received (no webhook configured):", data);
+    console.warn("[lead] received but LEAD_WEBHOOK_URL is not configured");
   }
 
   return NextResponse.json({ ok: true });

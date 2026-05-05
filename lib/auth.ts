@@ -16,7 +16,13 @@ export async function isAuthenticated(): Promise<boolean> {
   const c = await cookies();
   const token = c.get(COOKIE_NAME)?.value;
   if (!token) return false;
-  return token === tokenFor(passcode);
+  const expected = tokenFor(passcode);
+  if (token.length !== expected.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+  } catch {
+    return false;
+  }
 }
 
 export async function login(input: string): Promise<boolean> {
