@@ -170,11 +170,16 @@ export default async function PortfolioItemPage({
       {item.description ? (
         <Section surface="white" className="pt-0">
           <Container>
-            <div className="mx-auto max-w-3xl border-t border-line pt-12 md:pt-16">
-              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                About the project
-              </h2>
-              <div className="mt-6">
+            <div className="grid gap-8 border-t border-line pt-12 md:pt-16 lg:grid-cols-12 lg:gap-12">
+              <div className="lg:col-span-4">
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted">
+                  Overview
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
+                  About the project
+                </h2>
+              </div>
+              <div className="min-w-0 lg:col-span-7 lg:col-start-6">
                 <RichText html={item.description} />
               </div>
             </div>
