@@ -90,8 +90,7 @@
 
 /* Rich text public render — readable prose */
 .rich-text {
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .rich-text > * + * {
   margin-top: 1rem;
