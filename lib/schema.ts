@@ -1,6 +1,7 @@
 import { siteConfig } from "@/data/site";
 import { absoluteUrl } from "@/lib/utils";
 import type { Service, ServiceFAQ } from "@/types";
+import type { AdminPortfolioItem } from "@/types/admin";
 
 type JsonLdNode = Record<string, unknown>;
 
@@ -119,6 +120,31 @@ export function service(s: Service): JsonLdNode {
     areaServed: { "@type": "City", name: "Peshawar" },
     description: s.metaDescription,
     url: absoluteUrl(siteConfig.url, `/services/${s.slug}`),
+  };
+}
+
+export function creativeWork(item: AdminPortfolioItem): JsonLdNode {
+  const url = absoluteUrl(siteConfig.url, `/portfolio/${item.slug}`);
+  return {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: item.title,
+    headline: item.title,
+    description: item.summary,
+    url,
+    ...(item.image ? { image: item.image } : {}),
+    dateCreated: String(item.year),
+    genre: item.category,
+    creator: {
+      "@type": "Organization",
+      "@id": `${siteConfig.url}#localbusiness`,
+      name: siteConfig.name,
+    },
+    about: {
+      "@type": "Organization",
+      name: item.client,
+    },
+    inLanguage: "en-PK",
   };
 }
 

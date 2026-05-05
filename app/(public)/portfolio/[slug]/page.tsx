@@ -10,7 +10,7 @@ import type { AdminPortfolioItem } from "@/types/admin";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbList } from "@/lib/schema";
+import { breadcrumbList, creativeWork } from "@/lib/schema";
 import { PortfolioCard } from "@/components/portfolio/PortfolioCard";
 import type { ServiceCategory } from "@/types";
 
@@ -192,6 +192,7 @@ export default async function PortfolioItemPage({
           { name: item.title, href: `/portfolio/${item.slug}` },
         ])}
       />
+      <JsonLd id={`portfolio-creativework-${item.slug}`} data={creativeWork(item)} />
     </>
   );
 }

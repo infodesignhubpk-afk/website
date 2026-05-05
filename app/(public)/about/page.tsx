@@ -51,7 +51,7 @@ export default async function AboutPage() {
           <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "About", href: "/about" }]} />
           <div className="mt-6 grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-7">
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
                 A Peshawar studio building brands that work outside the screen.
               </h1>
               <p className="mt-5 max-w-2xl text-base md:text-lg leading-relaxed text-ink-soft">
