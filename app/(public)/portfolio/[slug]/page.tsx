@@ -79,7 +79,10 @@ export default async function PortfolioItemPage({
 
   return (
     <>
-      <Section surface="white" className="pt-8 pb-12 md:pt-12 md:pb-16">
+      <Section
+        surface="white"
+        className="!pt-8 !pb-6 md:!pt-10 md:!pb-8 lg:!pt-12 lg:!pb-8"
+      >
         <Container>
           <Breadcrumbs
             items={[
@@ -168,9 +171,9 @@ export default async function PortfolioItemPage({
       </Section>
 
       {item.description ? (
-        <Section surface="white" className="pt-0">
+        <Section surface="white" className="!py-0">
           <Container>
-            <div className="grid gap-8 border-t border-line pt-12 md:pt-16 lg:grid-cols-12 lg:gap-12">
+            <div className="grid gap-6 border-t border-line pt-6 pb-8 md:pt-8 md:pb-10 lg:grid-cols-12 lg:gap-8 lg:pb-12">
               <div className="lg:col-span-4">
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted">
                   Overview
@@ -180,7 +183,12 @@ export default async function PortfolioItemPage({
                 </h2>
               </div>
               <div className="min-w-0 lg:col-span-7 lg:col-start-6">
-                <RichText html={item.description} />
+                <div className="w-full max-w-2xl lg:ml-auto">
+                  <RichText
+                    html={item.description}
+                    className="portfolio-overview-rich-text"
+                  />
+                </div>
               </div>
             </div>
           </Container>

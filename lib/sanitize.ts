@@ -62,6 +62,7 @@ export function sanitizeRichText(html: string | null | undefined): string {
   s = s.replace(COMMENTS, "");
   s = s.replace(DANGEROUS_BLOCKS, "");
   s = s.replace(DANGEROUS_TAGS, "");
+  s = s.replace(/&nbsp;|&#160;|&#xA0;|\u00a0/gi, " ");
   // Walk tags, keep allowed, strip the rest while keeping inner content.
   return s.replace(
     /<\s*(\/?)\s*([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g,
