@@ -89,9 +89,6 @@
 }
 
 /* Rich text public render — readable prose */
-.rich-text {
-  overflow-wrap: break-word;
-}
 .rich-text > * + * {
   margin-top: 1rem;
 }
@@ -110,7 +107,6 @@
 .rich-text p {
   line-height: 1.75;
   text-align: justify;
-  text-justify: inter-word;
 }
 .rich-text ul,
 .rich-text ol {
