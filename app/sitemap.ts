@@ -8,6 +8,8 @@ import { listPublishedProducts } from "@/lib/admin/products";
 import { listCategories } from "@/lib/admin/categories";
 import { getSiteSettings } from "@/lib/admin/site";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settings = await getSiteSettings();
   const base = (settings.url || siteConfig.url).replace(/\/$/, "");
