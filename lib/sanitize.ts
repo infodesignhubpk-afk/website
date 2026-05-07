@@ -75,3 +75,49 @@ export function sanitizeRichText(html: string | null | undefined): string {
     },
   );
 }
+
+const HTML_ENTITIES: Record<string, string> = {
+  amp: "&",
+  apos: "'",
+  gt: ">",
+  hellip: "...",
+  laquo: "<<",
+  ldquo: '"',
+  lsquo: "'",
+  lt: "<",
+  mdash: "-",
+  ndash: "-",
+  nbsp: " ",
+  quot: '"',
+  raquo: ">>",
+  rdquo: '"',
+  rsquo: "'",
+};
+
+function decodeHtmlEntities(value: string): string {
+  return value.replace(/&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]+);/gi, (match, entity: string) => {
+    const key = entity.toLowerCase();
+    if (key.startsWith("#x")) {
+      const code = Number.parseInt(key.slice(2), 16);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : match;
+    }
+    if (key.startsWith("#")) {
+      const code = Number.parseInt(key.slice(1), 10);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : match;
+    }
+    return HTML_ENTITIES[key] ?? match;
+  });
+}
+
+export function richTextToPlainText(html: string | null | undefined): string {
+  if (!html) return "";
+  let text = String(html);
+  text = text.replace(COMMENTS, "");
+  text = text.replace(DANGEROUS_BLOCKS, "");
+  text = text.replace(DANGEROUS_TAGS, "");
+  text = text.replace(/<\s*br\s*\/?>/gi, " ");
+  text = text.replace(/<\s*\/\s*(p|h2|h3|li|blockquote|pre)\s*>/gi, " ");
+  text = text.replace(/<[^>]*>/g, " ");
+  text = decodeHtmlEntities(decodeHtmlEntities(text));
+  return text.replace(/\s+/g, " ").trim();
+}
