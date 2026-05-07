@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
-import { caseStudies, getCaseStudy } from "@/data/case-studies";
+import { getCaseStudyBySlug, listPublishedCaseStudies } from "@/lib/admin/case-studies";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -11,24 +11,28 @@ import { breadcrumbList } from "@/lib/schema";
 
 type Params = { slug: string };
 
-export function generateStaticParams(): Params[] {
+export const dynamic = "force-dynamic";
+
+export async function generateStaticParams(): Promise<Params[]> {
+  const caseStudies = await listPublishedCaseStudies();
   return caseStudies.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
-  const c = getCaseStudy(slug);
+  const c = await getCaseStudyBySlug(slug);
   if (!c) return {};
   return buildMetadata({
-    title: `${c.title} | Case Study`,
-    description: c.summary,
+    title: c.metaTitle || `${c.title} | Case Study`,
+    description: c.metaDescription || c.summary,
     path: `/case-studies/${c.slug}`,
+    image: c.image,
   });
 }
 
 export default async function CaseStudyPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const c = getCaseStudy(slug);
+  const c = await getCaseStudyBySlug(slug);
   if (!c) notFound();
 
   return (
@@ -106,5 +110,3 @@ export default async function CaseStudyPage({ params }: { params: Promise<Params
     </>
   );
 }
-
-export const dynamicParams = false;

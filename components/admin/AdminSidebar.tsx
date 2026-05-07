@@ -14,6 +14,7 @@ const sections: { heading: string; items: { href: string; label: string }[] }[] 
     heading: "Content",
     items: [
       { href: "/admin/blogs", label: "Blogs" },
+      { href: "/admin/case-studies", label: "Case Studies" },
       { href: "/admin/products", label: "Products" },
       { href: "/admin/categories", label: "Categories" },
       { href: "/admin/portfolio", label: "Portfolio" },

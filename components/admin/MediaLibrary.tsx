@@ -16,7 +16,7 @@ type Props = {
 
 const MAX_BYTES = 12 * 1024 * 1024;
 
-type TabKey = "all" | "branding" | "general" | "products" | "blog" | "categories" | "seo";
+type TabKey = "all" | "branding" | "general" | "products" | "blog" | "case-studies" | "categories" | "seo";
 
 const tabs: { key: TabKey; label: string; folder?: string; prefixes: string[] }[] = [
   { key: "all", label: "All", prefixes: [] },
@@ -24,6 +24,7 @@ const tabs: { key: TabKey; label: string; folder?: string; prefixes: string[] }[
   { key: "general", label: "General Images", folder: "uploads", prefixes: ["uploads/", "general/"] },
   { key: "products", label: "Products", folder: "products", prefixes: ["products/"] },
   { key: "blog", label: "Blog", folder: "blog", prefixes: ["blog/"] },
+  { key: "case-studies", label: "Case Studies", folder: "case-studies", prefixes: ["case-studies/"] },
   { key: "categories", label: "Categories", folder: "categories", prefixes: ["categories/"] },
   { key: "seo", label: "SEO", folder: "seo", prefixes: ["seo/"] },
 ];

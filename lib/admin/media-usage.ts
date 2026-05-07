@@ -1,6 +1,7 @@
 import "server-only";
 import { listProducts } from "@/lib/admin/products";
 import { listBlogPosts } from "@/lib/admin/blogs";
+import { listCaseStudies } from "@/lib/admin/case-studies";
 import { listCategories } from "@/lib/admin/categories";
 import { getSiteSettings } from "@/lib/admin/site";
 import { getSeoSettings } from "@/lib/admin/seo";
@@ -23,9 +24,10 @@ function add(map: MediaUsageMap, url: string | undefined | null, label: string, 
 export async function buildMediaUsage(): Promise<MediaUsageMap> {
   const usage: MediaUsageMap = {};
 
-  const [products, blogs, categories, site, seo] = await Promise.all([
+  const [products, blogs, caseStudies, categories, site, seo] = await Promise.all([
     listProducts(),
     listBlogPosts(),
+    listCaseStudies(),
     listCategories(),
     getSiteSettings(),
     getSeoSettings(),
@@ -40,6 +42,10 @@ export async function buildMediaUsage(): Promise<MediaUsageMap> {
 
   for (const b of blogs) {
     if (b.image) add(usage, b.image, `Blog: ${b.title}`, `/admin/blogs/${b.id}`);
+  }
+
+  for (const c of caseStudies) {
+    if (c.image) add(usage, c.image, `Case study: ${c.title}`, `/admin/case-studies/${c.id}`);
   }
 
   for (const c of categories) {

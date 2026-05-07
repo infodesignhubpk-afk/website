@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { siteConfig } from "@/data/site";
 import { services } from "@/data/services";
 import { listPublishedPortfolio } from "@/lib/admin/portfolio";
-import { caseStudies } from "@/data/case-studies";
+import { listPublishedCaseStudies } from "@/lib/admin/case-studies";
 import { listPublishedPosts } from "@/lib/admin/blogs";
 import { listPublishedProducts } from "@/lib/admin/products";
 import { listCategories } from "@/lib/admin/categories";
@@ -47,6 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  const caseStudies = await listPublishedCaseStudies();
   const caseStudyEntries: MetadataRoute.Sitemap = caseStudies.map((c) => ({
     url: `${base}/case-studies/${c.slug}`,
     lastModified: now,

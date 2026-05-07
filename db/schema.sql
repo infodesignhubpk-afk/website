@@ -26,6 +26,20 @@ CREATE TABLE IF NOT EXISTS blogs (
 CREATE INDEX IF NOT EXISTS idx_blogs_published ON blogs(published);
 CREATE INDEX IF NOT EXISTS idx_blogs_date ON blogs(date);
 
+CREATE TABLE IF NOT EXISTS case_studies (
+  id TEXT PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE,
+  data TEXT NOT NULL,
+  category TEXT NOT NULL,
+  client TEXT NOT NULL,
+  published INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_case_studies_published ON case_studies(published);
+CREATE INDEX IF NOT EXISTS idx_case_studies_category ON case_studies(category);
+CREATE INDEX IF NOT EXISTS idx_case_studies_client ON case_studies(client);
+
 CREATE TABLE IF NOT EXISTS products (
   id TEXT PRIMARY KEY,
   slug TEXT NOT NULL UNIQUE,
