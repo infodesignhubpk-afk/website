@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
-import { getCaseStudyBySlug, listPublishedCaseStudies } from "@/lib/admin/case-studies";
+import { getCaseStudyBySlug } from "@/lib/admin/case-studies";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -12,11 +12,6 @@ import { breadcrumbList } from "@/lib/schema";
 type Params = { slug: string };
 
 export const dynamic = "force-dynamic";
-
-export async function generateStaticParams(): Promise<Params[]> {
-  const caseStudies = await listPublishedCaseStudies();
-  return caseStudies.map((c) => ({ slug: c.slug }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
