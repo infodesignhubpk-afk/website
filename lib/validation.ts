@@ -14,7 +14,7 @@ export const contactSchema = z.object({
   phone: phoneSchema,
   email: z.string().email("Enter a valid email").optional().or(z.literal("")),
   message: z.string().min(10, "Tell us a bit more").max(2000),
-  website: z.string().max(0).optional().or(z.literal("")),
+  website: z.string().max(0).optional().default(""),
 });
 
 export const serviceInquirySchema = z.object({
@@ -22,7 +22,7 @@ export const serviceInquirySchema = z.object({
   phone: phoneSchema,
   service: z.string().min(2),
   brief: z.string().min(10).max(2000),
-  website: z.string().max(0).optional().or(z.literal("")),
+  website: z.string().max(0).optional().default(""),
 });
 
 export const quoteSchema = z.object({
@@ -34,7 +34,7 @@ export const quoteSchema = z.object({
   phone: phoneSchema,
   email: z.string().email().optional().or(z.literal("")),
   business: z.string().max(120).optional().or(z.literal("")),
-  website: z.string().max(0).optional().or(z.literal("")),
+  website: z.string().max(0).optional().default(""),
 });
 
 export const leadSchema = z.union([
@@ -43,7 +43,7 @@ export const leadSchema = z.union([
   quoteSchema.extend({ kind: z.literal("quote") }),
 ]);
 
-export type ContactInput = z.infer<typeof contactSchema>;
-export type ServiceInquiryInput = z.infer<typeof serviceInquirySchema>;
-export type QuoteInput = z.infer<typeof quoteSchema>;
-export type LeadInput = z.infer<typeof leadSchema>;
+export type ContactInput = z.input<typeof contactSchema>;
+export type ServiceInquiryInput = z.input<typeof serviceInquirySchema>;
+export type QuoteInput = z.input<typeof quoteSchema>;
+export type LeadInput = z.input<typeof leadSchema>;

@@ -46,14 +46,7 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
-      <input
-        type="text"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
-        {...register("website")}
-      />
+      <input type="hidden" defaultValue="" {...register("website")} />
       <FormField label="Your name" htmlFor="contact-name" required error={errors.name?.message}>
         <input id="contact-name" type="text" autoComplete="name" className={inputCls} {...register("name")} />
       </FormField>

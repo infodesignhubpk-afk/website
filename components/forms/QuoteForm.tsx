@@ -94,14 +94,7 @@ export function QuoteForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="rounded-2xl border border-line bg-bg p-6 md:p-10">
-      <input
-        type="text"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
-        {...register("website")}
-      />
+      <input type="hidden" defaultValue="" {...register("website")} />
       <ol className="mb-8 grid grid-cols-3 gap-3 text-xs font-semibold uppercase tracking-wider">
         {[1, 2, 3].map((n) => (
           <li

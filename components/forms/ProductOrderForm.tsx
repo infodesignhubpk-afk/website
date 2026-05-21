@@ -15,10 +15,10 @@ const formSchema = z.object({
   customerEmail: z.string().email().optional().or(z.literal("")),
   customerBusiness: z.string().max(120).optional().or(z.literal("")),
   notes: z.string().max(2000).optional().or(z.literal("")),
-  website: z.string().max(0).optional().or(z.literal("")),
+  website: z.string().max(0).optional().default(""),
 });
 
-type FormInput = z.infer<typeof formSchema>;
+type FormInput = z.input<typeof formSchema>;
 
 type Props = {
   productId: string;
@@ -102,14 +102,7 @@ export function ProductOrderForm({ productId, productSlug, productName, unitPric
       <h3 className="text-lg font-semibold tracking-tight">Reserve this product</h3>
       <p className="mt-1 text-sm text-ink-soft">Submit the form, then we&apos;ll confirm payment options by phone or WhatsApp.</p>
 
-      <input
-        type="text"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
-        {...register("website")}
-      />
+      <input type="hidden" defaultValue="" {...register("website")} />
 
       <div className="mt-5 space-y-4">
         <FormField label="Quantity" htmlFor="po-qty" required error={errors.quantity?.message}>

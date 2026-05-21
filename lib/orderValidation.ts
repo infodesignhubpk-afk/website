@@ -30,7 +30,7 @@ export const orderRequestSchema = z.object({
   deliveryMethod: deliveryMethodSchema.optional(),
   deliveryAddress: deliveryAddressSchema.optional(),
   paymentMethod: paymentMethodSchema.optional(),
-  website: z.string().max(0).optional().or(z.literal("")),
+  website: z.string().max(0).optional().default(""),
 });
 
 export type OrderRequest = z.infer<typeof orderRequestSchema>;

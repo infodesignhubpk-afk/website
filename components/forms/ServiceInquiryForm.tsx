@@ -55,14 +55,7 @@ export function ServiceInquiryForm({ defaultService }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
       <input type="hidden" {...register("service")} />
-      <input
-        type="text"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
-        {...register("website")}
-      />
+      <input type="hidden" defaultValue="" {...register("website")} />
       <div className="grid gap-5 md:grid-cols-2">
         <FormField label="Your name" htmlFor="si-name" required error={errors.name?.message}>
           <input id="si-name" type="text" autoComplete="name" className={inputCls} {...register("name")} />

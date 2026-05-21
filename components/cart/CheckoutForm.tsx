@@ -48,7 +48,7 @@ const checkoutSchema = z
     postalCode: z.string().max(20).optional().or(z.literal("")),
     landmark: z.string().max(200).optional().or(z.literal("")),
     notes: z.string().max(2000).optional().or(z.literal("")),
-    website: z.string().max(0).optional().or(z.literal("")),
+    website: z.string().max(0).optional().default(""),
   })
   .superRefine((v, ctx) => {
     if (v.paymentMethod === "cod" && v.deliveryMethod === "courier") {
@@ -60,7 +60,7 @@ const checkoutSchema = z
     }
   });
 
-type FormInput = z.infer<typeof checkoutSchema>;
+type FormInput = z.input<typeof checkoutSchema>;
 
 export function CheckoutForm() {
   const { items, subtotal, currency, hydrated, clear } = useCart();
@@ -239,15 +239,8 @@ export function CheckoutForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="grid gap-8 lg:grid-cols-3">
-      {/* Honeypot */}
-      <input
-        type="text"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
-        {...register("website")}
-      />
+      {/* Honeypot — type="hidden" so browser autofill never fills it */}
+      <input type="hidden" defaultValue="" {...register("website")} />
 
       <div className="space-y-6 lg:col-span-2">
         <section className="rounded-2xl border border-line bg-bg p-6 md:p-8">
