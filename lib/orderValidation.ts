@@ -14,34 +14,24 @@ export const deliveryMethodSchema = z.enum(["pickup", "peshawar", "courier"]);
 export const paymentMethodSchema = z.enum(["cod", "bank_transfer", "jazzcash", "easypaisa"]);
 
 export const deliveryAddressSchema = z.object({
-  street: z.string().min(3).max(200),
-  city: z.string().min(2).max(80),
+  street: z.string().max(200).optional().or(z.literal("")),
+  city: z.string().max(80).optional().or(z.literal("")),
   postalCode: z.string().max(20).optional().or(z.literal("")),
   landmark: z.string().max(200).optional().or(z.literal("")),
 });
 
-export const orderRequestSchema = z
-  .object({
-    customerName: z.string().min(2).max(120),
-    customerPhone: phoneSchema,
-    customerEmail: z.string().email().optional().or(z.literal("")),
-    customerBusiness: z.string().max(120).optional().or(z.literal("")),
-    notes: z.string().max(2000).optional().or(z.literal("")),
-    items: z.array(orderItemSchema).min(1).max(50),
-    deliveryMethod: deliveryMethodSchema.optional(),
-    deliveryAddress: deliveryAddressSchema.optional(),
-    paymentMethod: paymentMethodSchema.optional(),
-    website: z.string().max(0).optional().or(z.literal("")),
-  })
-  .refine(
-    (v) => {
-      if (v.deliveryMethod === "peshawar" || v.deliveryMethod === "courier") {
-        return v.deliveryAddress && v.deliveryAddress.street && v.deliveryAddress.city;
-      }
-      return true;
-    },
-    { message: "Delivery address is required when delivery is selected", path: ["deliveryAddress"] },
-  );
+export const orderRequestSchema = z.object({
+  customerName: z.string().min(2).max(120),
+  customerPhone: phoneSchema,
+  customerEmail: z.string().email().optional().or(z.literal("")),
+  customerBusiness: z.string().max(120).optional().or(z.literal("")),
+  notes: z.string().max(2000).optional().or(z.literal("")),
+  items: z.array(orderItemSchema).min(1).max(50),
+  deliveryMethod: deliveryMethodSchema.optional(),
+  deliveryAddress: deliveryAddressSchema.optional(),
+  paymentMethod: paymentMethodSchema.optional(),
+  website: z.string().max(0).optional().or(z.literal("")),
+});
 
 export type OrderRequest = z.infer<typeof orderRequestSchema>;
 

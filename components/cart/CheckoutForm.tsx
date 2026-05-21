@@ -51,14 +51,6 @@ const checkoutSchema = z
     website: z.string().max(0).optional().or(z.literal("")),
   })
   .superRefine((v, ctx) => {
-    if (v.deliveryMethod !== "pickup") {
-      if (!v.street || v.street.length < 3) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["street"], message: "Street address is required for delivery." });
-      }
-      if (!v.city || v.city.length < 2) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["city"], message: "City is required for delivery." });
-      }
-    }
     if (v.paymentMethod === "cod" && v.deliveryMethod === "courier") {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -307,10 +299,10 @@ export function CheckoutForm() {
 
           {showAddress ? (
             <div className="mt-6 grid gap-5 border-t border-line pt-6 md:grid-cols-2">
-              <FormField label="Street address" htmlFor="co-street" required error={errors.street?.message} className="md:col-span-2">
+              <FormField label="Street address (optional)" htmlFor="co-street" error={errors.street?.message} className="md:col-span-2">
                 <input id="co-street" type="text" autoComplete="street-address" className={inputCls} {...register("street")} />
               </FormField>
-              <FormField label="City" htmlFor="co-city" required error={errors.city?.message}>
+              <FormField label="City (optional)" htmlFor="co-city" error={errors.city?.message}>
                 <input id="co-city" type="text" autoComplete="address-level2" className={inputCls} {...register("city")} />
               </FormField>
               <FormField label="Postal code (optional)" htmlFor="co-postal" error={errors.postalCode?.message}>

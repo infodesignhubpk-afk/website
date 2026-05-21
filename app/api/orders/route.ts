@@ -36,8 +36,8 @@ export async function POST(req: Request) {
       deliveryMethod: data.deliveryMethod ?? "pickup",
       deliveryAddress: data.deliveryAddress
         ? {
-            street: data.deliveryAddress.street,
-            city: data.deliveryAddress.city,
+            street: data.deliveryAddress.street ?? "",
+            city: data.deliveryAddress.city ?? "",
             postalCode: data.deliveryAddress.postalCode || undefined,
             landmark: data.deliveryAddress.landmark || undefined,
           }
