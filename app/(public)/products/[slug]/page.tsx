@@ -60,7 +60,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<Pa
 
   return (
     <>
-      <Section surface="white" className="pt-8 pb-4 md:pt-10 md:pb-4">
+      <section className="bg-bg pt-6 pb-12 md:pt-8 md:pb-16 lg:pb-20">
         <Container>
           <Breadcrumbs
             items={[
@@ -69,12 +69,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<Pa
               { name: product.name, href: `/products/${product.slug}` },
             ]}
           />
-        </Container>
-      </Section>
-
-      <Section surface="white" className="pt-4 md:pt-6">
-        <Container>
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+          <div className="mt-6 grid gap-10 lg:grid-cols-12 lg:gap-12 md:mt-8">
             <div className="lg:col-span-7">
               <ProductGallery name={product.name} images={product.images} />
             </div>
@@ -138,7 +133,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<Pa
             </div>
           ) : null}
         </Container>
-      </Section>
+      </section>
 
       {others.length > 0 ? (
         <Section surface="alt">

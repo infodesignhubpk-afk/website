@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/Button";
 import { FormField, inputCls } from "@/components/forms/FormField";
@@ -33,7 +33,7 @@ export function ProductOrderForm({ productId, productSlug, productName, unitPric
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<FormInput>({
@@ -46,7 +46,7 @@ export function ProductOrderForm({ productId, productSlug, productName, unitPric
   const [reference, setReference] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
 
-  const qty = Number(watch("quantity") || 1);
+  const qty = Number(useWatch({ control, name: "quantity" }) || 1);
   const total = qty * unitPrice;
 
   async function onSubmit(values: FormInput) {

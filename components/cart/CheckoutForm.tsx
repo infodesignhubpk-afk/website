@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCart } from "@/lib/cart-context";
@@ -78,8 +78,9 @@ export function CheckoutForm() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
+    setFocus,
     formState: { errors, isSubmitting },
   } = useForm<FormInput>({
     resolver: zodResolver(checkoutSchema),
@@ -100,8 +101,8 @@ export function CheckoutForm() {
     mode: "onTouched",
   });
 
-  const deliveryMethod = watch("deliveryMethod");
-  const paymentMethod = watch("paymentMethod");
+  const deliveryMethod = useWatch({ control, name: "deliveryMethod" });
+  const paymentMethod = useWatch({ control, name: "paymentMethod" });
   const deliveryFee = DELIVERY_FEES[deliveryMethod] ?? 0;
   const total = subtotal + deliveryFee;
 
@@ -187,9 +188,36 @@ export function CheckoutForm() {
   }
 
   const showAddress = deliveryMethod !== "pickup";
+  const hasErrors = Object.keys(errors).length > 0;
+
+  function onInvalid(fieldErrors: typeof errors) {
+    const order: (keyof FormInput)[] = [
+      "customerName",
+      "customerPhone",
+      "customerEmail",
+      "customerBusiness",
+      "deliveryMethod",
+      "street",
+      "city",
+      "postalCode",
+      "landmark",
+      "paymentMethod",
+      "notes",
+    ];
+    const first = order.find((k) => fieldErrors[k]);
+    if (first) {
+      try {
+        setFocus(first);
+      } catch {}
+      if (typeof document !== "undefined") {
+        const el = document.getElementById(`co-${first === "customerName" ? "name" : first === "customerPhone" ? "phone" : first === "customerEmail" ? "email" : first === "customerBusiness" ? "biz" : first === "postalCode" ? "postal" : first}`);
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-8 lg:grid-cols-3">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="grid gap-8 lg:grid-cols-3">
       {/* Honeypot */}
       <input
         type="text"
@@ -355,6 +383,12 @@ export function CheckoutForm() {
             {isSubmitting ? "Placing order…" : "Place order"}
             {!isSubmitting ? <ArrowRightIcon size={16} /> : null}
           </button>
+
+          {hasErrors ? (
+            <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
+              Please fix the highlighted fields above before placing your order.
+            </p>
+          ) : null}
 
           {submitError ? (
             <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">{submitError}</p>

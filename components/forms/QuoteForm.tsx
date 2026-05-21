@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { quoteSchema, type QuoteInput } from "@/lib/validation";
 import { FormField, inputCls } from "@/components/forms/FormField";
@@ -32,7 +32,7 @@ export function QuoteForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     trigger,
-    watch,
+    control,
     setValue,
     reset,
   } = useForm<QuoteInput>({
@@ -51,9 +51,9 @@ export function QuoteForm() {
     mode: "onTouched",
   });
 
-  const service = watch("service");
-  const budget = watch("budget");
-  const timeline = watch("timeline");
+  const service = useWatch({ control, name: "service" });
+  const budget = useWatch({ control, name: "budget" });
+  const timeline = useWatch({ control, name: "timeline" });
 
   async function onSubmit(values: QuoteInput) {
     try {

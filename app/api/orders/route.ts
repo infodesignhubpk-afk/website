@@ -25,42 +25,48 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const order = await createOrder({
-    customerName: data.customerName,
-    customerPhone: data.customerPhone,
-    customerEmail: data.customerEmail || undefined,
-    customerBusiness: data.customerBusiness || undefined,
-    notes: data.notes || undefined,
-    items: data.items,
-    deliveryMethod: data.deliveryMethod ?? "pickup",
-    deliveryAddress: data.deliveryAddress
-      ? {
-          street: data.deliveryAddress.street,
-          city: data.deliveryAddress.city,
-          postalCode: data.deliveryAddress.postalCode || undefined,
-          landmark: data.deliveryAddress.landmark || undefined,
-        }
-      : undefined,
-    deliveryFee: deliveryFeeFor(data.deliveryMethod),
-    paymentMethod: data.paymentMethod ?? "cod",
-    source: req.headers.get("origin") ?? "designhub.com.pk",
-  });
+  try {
+    const order = await createOrder({
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      customerEmail: data.customerEmail || undefined,
+      customerBusiness: data.customerBusiness || undefined,
+      notes: data.notes || undefined,
+      items: data.items,
+      deliveryMethod: data.deliveryMethod ?? "pickup",
+      deliveryAddress: data.deliveryAddress
+        ? {
+            street: data.deliveryAddress.street,
+            city: data.deliveryAddress.city,
+            postalCode: data.deliveryAddress.postalCode || undefined,
+            landmark: data.deliveryAddress.landmark || undefined,
+          }
+        : undefined,
+      deliveryFee: deliveryFeeFor(data.deliveryMethod),
+      paymentMethod: data.paymentMethod ?? "cod",
+      source: req.headers.get("origin") ?? "designhub.com.pk",
+    });
 
-  const webhook = process.env.LEAD_WEBHOOK_URL;
-  if (webhook) {
-    try {
-      await fetch(webhook, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(process.env.LEAD_WEBHOOK_SECRET ? { "X-Webhook-Secret": process.env.LEAD_WEBHOOK_SECRET } : {}),
-        },
-        body: JSON.stringify({ kind: "order", order }),
-      });
-    } catch (err) {
-      console.error("Order webhook failed:", err);
+    const webhook = process.env.LEAD_WEBHOOK_URL;
+    if (webhook) {
+      try {
+        await fetch(webhook, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(process.env.LEAD_WEBHOOK_SECRET ? { "X-Webhook-Secret": process.env.LEAD_WEBHOOK_SECRET } : {}),
+          },
+          body: JSON.stringify({ kind: "order", order }),
+        });
+      } catch (err) {
+        console.error("Order webhook failed:", err);
+      }
     }
-  }
 
-  return NextResponse.json({ ok: true, reference: order.reference, id: order.id });
+    return NextResponse.json({ ok: true, reference: order.reference, id: order.id });
+  } catch (err) {
+    console.error("Order creation failed:", err);
+    const message = err instanceof Error ? err.message : "Could not place order. Please try again or WhatsApp us.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
