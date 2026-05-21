@@ -91,7 +91,7 @@ export function CheckoutForm() {
       notes: "",
       website: "",
     },
-    mode: "onTouched",
+    mode: "onBlur",
     reValidateMode: "onChange",
   });
 
