@@ -81,6 +81,7 @@ export function CheckoutForm() {
     control,
     setValue,
     setFocus,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<FormInput>({
     resolver: zodResolver(checkoutSchema),
@@ -99,6 +100,7 @@ export function CheckoutForm() {
       website: "",
     },
     mode: "onTouched",
+    reValidateMode: "onChange",
   });
 
   const deliveryMethod = useWatch({ control, name: "deliveryMethod" });
@@ -112,6 +114,13 @@ export function CheckoutForm() {
       setValue("paymentMethod", "bank_transfer", { shouldValidate: true });
     }
   }, [deliveryMethod, paymentMethod, setValue]);
+
+  // Clear stale address errors when the user switches back to pickup
+  useEffect(() => {
+    if (deliveryMethod === "pickup") {
+      clearErrors(["street", "city", "postalCode", "landmark"]);
+    }
+  }, [deliveryMethod, clearErrors]);
 
   if (!hydrated) {
     return <div className="rounded-2xl border border-line bg-bg p-10 text-center text-sm text-muted">Loading checkout…</div>;
@@ -188,7 +197,27 @@ export function CheckoutForm() {
   }
 
   const showAddress = deliveryMethod !== "pickup";
-  const hasErrors = Object.keys(errors).length > 0;
+
+  const FIELD_LABELS: Record<keyof FormInput, string> = {
+    customerName: "Full name",
+    customerPhone: "Phone / WhatsApp",
+    customerEmail: "Email",
+    customerBusiness: "Business",
+    deliveryMethod: "Delivery method",
+    paymentMethod: "Payment method",
+    street: "Street address",
+    city: "City",
+    postalCode: "Postal code",
+    landmark: "Landmark",
+    notes: "Notes",
+    website: "Spam check",
+  };
+  const errorList = (Object.keys(errors) as (keyof FormInput)[]).map((k) => ({
+    key: k,
+    label: FIELD_LABELS[k] ?? k,
+    message: errors[k]?.message,
+  }));
+  const hasErrors = errorList.length > 0;
 
   function onInvalid(fieldErrors: typeof errors) {
     const order: (keyof FormInput)[] = [
@@ -385,9 +414,17 @@ export function CheckoutForm() {
           </button>
 
           {hasErrors ? (
-            <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
-              Please fix the highlighted fields above before placing your order.
-            </p>
+            <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
+              <p>Please fix the following before placing your order:</p>
+              <ul className="mt-1 list-disc pl-4">
+                {errorList.map((e) => (
+                  <li key={e.key}>
+                    <span className="font-semibold">{e.label}</span>
+                    {e.message ? <>: {e.message}</> : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : null}
 
           {submitError ? (
