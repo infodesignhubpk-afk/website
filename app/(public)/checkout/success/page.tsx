@@ -4,6 +4,7 @@ import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { buildMetadata } from "@/lib/seo";
 import { getOrderByReference } from "@/lib/admin/orders";
+import { verifyOrderToken } from "@/lib/orderToken";
 import { getSite } from "@/lib/admin/site";
 import { CheckIcon, ArrowRightIcon, WhatsAppIcon } from "@/components/ui/Icons";
 import { whatsappLink } from "@/lib/utils";
@@ -21,11 +22,15 @@ export const dynamic = "force-dynamic";
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ref?: string }>;
+  searchParams: Promise<{ ref?: string; t?: string }>;
 }) {
   const sp = await searchParams;
   const ref = sp.ref ?? "";
-  const order = ref ? await getOrderByReference(ref) : null;
+  // The summary below contains the customer name, phone number and delivery
+  // address. Only render it for someone holding the token issued at checkout —
+  // never for anyone who simply knows or guesses a reference.
+  const authorized = verifyOrderToken(ref, sp.t);
+  const order = authorized ? await getOrderByReference(ref) : null;
   const site = await getSite();
 
   return (
@@ -100,6 +105,11 @@ export default async function CheckoutSuccessPage({
               ) : null}
             </div>
           </div>
+        ) : ref ? (
+          <p className="mx-auto mt-10 max-w-2xl text-center text-sm text-muted">
+            For your security, the full order summary is only shown immediately after checkout.
+            Quote your reference to us on WhatsApp and we will confirm the details.
+          </p>
         ) : null}
 
         <div className="mx-auto mt-10 flex max-w-2xl flex-wrap justify-center gap-3">

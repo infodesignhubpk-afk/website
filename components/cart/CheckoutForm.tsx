@@ -179,10 +179,13 @@ export function CheckoutForm() {
         } catch {}
         throw new Error(msg);
       }
-      const data = (await res.json()) as { reference?: string };
+      const data = (await res.json()) as { reference?: string; token?: string };
       const ref = data.reference ?? "";
+      const token = data.token ?? "";
       clear();
-      router.push(`/checkout/success?ref=${encodeURIComponent(ref)}`);
+      const query = new URLSearchParams({ ref });
+      if (token) query.set("t", token);
+      router.push(`/checkout/success?${query.toString()}`);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Order failed.");
     }

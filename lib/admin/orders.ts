@@ -1,5 +1,6 @@
 import "server-only";
 import { d1All, d1Exec, d1Configured, nowMs } from "@/lib/db";
+import crypto from "crypto";
 import { newId } from "@/lib/store";
 import type {
   DeliveryAddress,
@@ -76,7 +77,10 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   const total = subtotal + deliveryFee;
   const currency = input.items[0]?.currency ?? "PKR";
   const id = newId("ord");
-  const reference = `DH-${Date.now().toString().slice(-7)}`;
+  // Random, not clock-derived: the previous `Date.now().slice(-7)` was both
+  // guessable from the order time and wrapped every 10,000,000ms (~2.8h),
+  // colliding against the UNIQUE reference column.
+  const reference = `DH-${crypto.randomBytes(5).toString("hex").toUpperCase()}`;
   const order: Order = {
     id,
     reference,

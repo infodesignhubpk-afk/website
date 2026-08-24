@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { deliveryFeeFor, orderRequestSchema } from "@/lib/orderValidation";
 import { createOrder } from "@/lib/admin/orders";
+import { signOrderToken } from "@/lib/orderToken";
 
 export const runtime = "nodejs";
 
@@ -63,7 +64,12 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ ok: true, reference: order.reference, id: order.id });
+    return NextResponse.json({
+      ok: true,
+      reference: order.reference,
+      token: signOrderToken(order.reference),
+      id: order.id,
+    });
   } catch (err) {
     console.error("Order creation failed:", err);
     const message = err instanceof Error ? err.message : "Could not place order. Please try again or WhatsApp us.";
