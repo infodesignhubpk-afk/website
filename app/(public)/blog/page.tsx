@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/ui/Section";
@@ -35,12 +36,31 @@ export default async function BlogIndexPage() {
             {blogPosts.map((p) => (
               <li key={p.slug}>
                 <Link href={`/blog/${p.slug}`} className="group block h-full overflow-hidden rounded-2xl border border-line bg-bg transition-all hover:-translate-y-1">
-                  <div className="aspect-[16/10] bg-surface p-8">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted">{p.date} · {p.readingMinutes} min read</p>
-                    <p className="mt-4 text-2xl font-bold tracking-tight">{p.title}</p>
+                  <div className="relative aspect-[16/10] overflow-hidden bg-surface">
+                    {p.image ? (
+                      <Image
+                        src={p.image}
+                        alt={p.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="p-8">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted">{p.date} · {p.readingMinutes} min read</p>
+                        <p className="mt-4 text-2xl font-bold tracking-tight">{p.title}</p>
+                      </div>
+                    )}
                   </div>
                   <div className="p-6">
-                    <p className="text-sm text-ink-soft">{p.excerpt}</p>
+                    {p.image && (
+                      <>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted">{p.date} · {p.readingMinutes} min read</p>
+                        <p className="mt-2 text-xl font-bold tracking-tight">{p.title}</p>
+                      </>
+                    )}
+                    <p className={`text-sm text-ink-soft ${p.image ? "mt-3" : ""}`}>{p.excerpt}</p>
                     <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold">
                       Read more
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="transition-transform group-hover:translate-x-1">

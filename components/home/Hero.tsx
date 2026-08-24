@@ -79,8 +79,8 @@ type HeroTile = {
 
 const heroTiles: HeroTile[] = [
   {
-    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777736164292-drbj4n-brand-identity.jpeg",
-    alt: "Brand identity work in progress",
+    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1778320902438-jl5kht-02-reception.jpg",
+    alt: "Branded reception area with signage and interior identity",
     label: "Identity",
     caption: "Logo design + brand systems",
     offset: "",
@@ -95,7 +95,7 @@ const heroTiles: HeroTile[] = [
     toneClass: "text-brand",
   },
   {
-    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777736173183-ki1xef-flex-banner-branding.jpeg",
+    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1778247206128-2x6t4a-signboard-on-fast-food-restaurant-202605081726-3.webp",
     alt: "Outdoor flex banner signboard installation",
     label: "Signboards",
     caption: "Flex banners · Boards · Outdoor",
@@ -103,8 +103,8 @@ const heroTiles: HeroTile[] = [
     toneClass: "text-brand",
   },
   {
-    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/uploads/1777729739972-9jxscw-portrait-vector.jpeg",
-    alt: "Vector illustration portrait used in social campaigns",
+    src: "https://pub-0e1879e89f994157b46dba1da3153292.r2.dev/products/1777997462671-lpbv3m-social-media-tips-blog-header-no-logo.webp",
+    alt: "Social media campaign creative for a client",
     label: "Digital",
     caption: "Meta Ads · Lead-gen for KP",
     offset: "",

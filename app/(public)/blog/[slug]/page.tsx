@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
@@ -28,6 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     title: post.metaTitle || post.title,
     description: post.metaDescription || post.excerpt,
     path: `/blog/${post.slug}`,
+    image: post.image,
   });
 }
 
@@ -69,10 +71,24 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
             <h1 className="mt-3 text-3xl md:text-5xl font-bold tracking-tight">{post.title}</h1>
             <p className="mt-3 text-base md:text-lg leading-relaxed text-ink-soft">{post.excerpt}</p>
           </div>
+
+          {post.image && (
+            <div className="relative mt-8 aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-2xl border border-line bg-surface">
+              <Image
+                src={post.image}
+                alt={post.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 768px"
+                className="object-cover"
+                priority
+                unoptimized
+              />
+            </div>
+          )}
         </Container>
       </Section>
 
-      <Section surface="white" className="pt-0">
+      <Section surface="white" className="pt-0 md:pt-0 lg:pt-0">
         <Container className="max-w-3xl">
           <article>
             <RichText html={post.body} />
