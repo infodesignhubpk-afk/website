@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { leadSchema } from "@/lib/validation";
+import { sendLeadNotificationEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -23,6 +24,13 @@ export async function POST(req: Request) {
 
   if (data.website) {
     return NextResponse.json({ ok: true });
+  }
+
+  // Send email notification to info.designhubpk@gmail.com
+  try {
+    await sendLeadNotificationEmail(data);
+  } catch (err) {
+    console.error("Failed to send lead email notification:", err);
   }
 
   const webhook = process.env.LEAD_WEBHOOK_URL;

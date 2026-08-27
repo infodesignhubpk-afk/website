@@ -56,7 +56,7 @@ Lead-generation website for **Design Hub**, a branding, printing, signage, and d
 Accepts international (`+44...`, `+1...`, `+92...`, etc.) and local (`03...`, landline) formats (minimum 7 digits).
 
 ## Env vars (see `.env.example`)
-`NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_GSC_VERIFICATION`, `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_PHONE`, `NEXT_PUBLIC_EMAIL`, `LEAD_WEBHOOK_URL`, `LEAD_WEBHOOK_SECRET`.
+`NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_GSC_VERIFICATION`, `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_PHONE`, `NEXT_PUBLIC_EMAIL`, `NOTIFICATION_EMAIL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `RESEND_API_KEY`, `LEAD_WEBHOOK_URL`, `LEAD_WEBHOOK_SECRET`.
 
 ## Build gates
 After each phase: `pnpm build` must pass. Definition of Done: typecheck, build, lint clean; Lighthouse >= 90/95/95 on home + a service page.

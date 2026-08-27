@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { deliveryFeeFor, orderRequestSchema } from "@/lib/orderValidation";
 import { createOrder } from "@/lib/admin/orders";
 import { signOrderToken } from "@/lib/orderToken";
+import { sendOrderNotificationEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -47,6 +48,13 @@ export async function POST(req: Request) {
       paymentMethod: data.paymentMethod ?? "cod",
       source: req.headers.get("origin") ?? "designhub.com.pk",
     });
+
+    // Send email notification for new order
+    try {
+      await sendOrderNotificationEmail(order);
+    } catch (err) {
+      console.error("Failed to send order email notification:", err);
+    }
 
     const webhook = process.env.LEAD_WEBHOOK_URL;
     if (webhook) {
