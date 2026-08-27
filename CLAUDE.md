@@ -53,7 +53,7 @@ Lead-generation website for **Design Hub**, a branding, printing, signage, and d
 - Forms: honeypot field `name="website"`, Zod validation, POST to `/api/lead`.
 
 ## Phone validation
-Accepts `+92...` and `03...` formats.
+Accepts international (`+44...`, `+1...`, `+92...`, etc.) and local (`03...`, landline) formats (minimum 7 digits).
 
 ## Env vars (see `.env.example`)
 `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_GSC_VERIFICATION`, `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_PHONE`, `NEXT_PUBLIC_EMAIL`, `LEAD_WEBHOOK_URL`, `LEAD_WEBHOOK_SECRET`.

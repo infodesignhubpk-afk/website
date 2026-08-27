@@ -1,13 +1,21 @@
 import { z } from "zod";
 
-const phoneRegex = /^(?:\+92|0092|92|0)3\d{9}$|^(?:\+92|0092|92)?\s?3\d{2}[\s-]?\d{7}$/;
+// Permits international formats (+44..., +1..., +92...), local formats (03..., landlines), and standard punctuation
+const phoneRegex = /^\+?[\d\s\-().]{7,25}$/;
 
 export const phoneSchema = z
   .string()
-  .min(7, "Please enter a valid phone number")
-  .refine((v) => phoneRegex.test(v.replace(/\s|-/g, "")), {
-    message: "Use +92 3xx xxx xxxx or 03xx xxx xxxx",
-  });
+  .trim()
+  .min(1, "Please enter your phone number")
+  .refine(
+    (v) => {
+      const digits = v.replace(/\D/g, "");
+      return phoneRegex.test(v) && digits.length >= 7 && digits.length <= 16;
+    },
+    {
+      message: "Please enter a valid phone number",
+    },
+  );
 
 export const contactSchema = z.object({
   name: z.string().min(2, "Please enter your name").max(80),

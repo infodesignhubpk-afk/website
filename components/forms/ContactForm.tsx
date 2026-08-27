@@ -50,7 +50,7 @@ export function ContactForm() {
       <FormField label="Your name" htmlFor="contact-name" required error={errors.name?.message}>
         <input id="contact-name" type="text" autoComplete="name" className={inputCls} {...register("name")} />
       </FormField>
-      <FormField label="Phone" htmlFor="contact-phone" required hint="+92 3xx xxx xxxx or 03xx xxx xxxx" error={errors.phone?.message}>
+      <FormField label="Phone" htmlFor="contact-phone" required error={errors.phone?.message}>
         <input id="contact-phone" type="tel" autoComplete="tel" className={inputCls} {...register("phone")} />
       </FormField>
       <FormField label="Email" htmlFor="contact-email" hint="Optional, but useful if we miss your call" error={errors.email?.message}>
