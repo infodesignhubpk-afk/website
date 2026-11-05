@@ -6,8 +6,14 @@ import { Accordion } from "@/components/ui/Accordion";
 import { homepageFAQs } from "@/data/faqs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { faqPage } from "@/lib/schema";
+import { getSite } from "@/lib/admin/site";
 
-export function HomeFAQ() {
+export async function HomeFAQ() {
+  const site = await getSite();
+  const faqs = homepageFAQs({
+    address: `${site.address.street}, ${site.address.locality}`,
+    email: site.email,
+  });
   return (
     <Section surface="white">
       <Container>
@@ -29,11 +35,11 @@ export function HomeFAQ() {
             </div>
           </div>
           <div className="lg:col-span-7">
-            <Accordion items={homepageFAQs} idPrefix="home-faq" />
+            <Accordion items={faqs} idPrefix="home-faq" />
           </div>
         </div>
       </Container>
-      <JsonLd data={faqPage(homepageFAQs)} id="home-faq-jsonld" />
+      <JsonLd data={faqPage(faqs)} id="home-faq-jsonld" />
     </Section>
   );
 }

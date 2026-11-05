@@ -23,7 +23,7 @@ const DELIVERY_FEES: Record<DeliveryMethod, number> = {
 };
 
 const DELIVERY_OPTIONS: { value: DeliveryMethod; label: string; description: string; fee: number }[] = [
-  { value: "pickup", label: "Pickup from our office", description: "Collect from University Road, Peshawar (Mon–Sat 9:30am–8pm).", fee: 0 },
+  { value: "pickup", label: "Pickup from our office", description: "Collect from our office (Mon–Sat 9:30am–8pm).", fee: 0 },
   { value: "peshawar", label: "Peshawar local delivery", description: "Within Peshawar city limits — typically 24 to 48 hours.", fee: 300 },
   { value: "courier", label: "Country-wide courier", description: "Tracked courier delivery anywhere in Pakistan — 2 to 5 working days.", fee: 600 },
 ];
@@ -83,10 +83,14 @@ function readRepriced(data: unknown): RepricedLine[] {
   );
 }
 
-export function CheckoutForm() {
+export function CheckoutForm({ pickupAddress }: { pickupAddress: string }) {
   const { items, subtotal, currency, hydrated, clear, add, remove } = useCart();
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // The pickup address comes from Site Settings, so it follows admin edits.
+  const deliveryOptions = DELIVERY_OPTIONS.map((opt) =>
+    opt.value === "pickup" ? { ...opt, description: `Collect from ${pickupAddress} (Mon–Sat 9:30am–8pm).` } : opt,
+  );
 
   const {
     register,
@@ -311,7 +315,7 @@ export function CheckoutForm() {
         <section className="rounded-2xl border border-line bg-bg p-6 md:p-8">
           <h2 className="text-lg font-semibold tracking-tight md:text-xl">2. Delivery</h2>
           <ul className="mt-5 space-y-3">
-            {DELIVERY_OPTIONS.map((opt) => (
+            {deliveryOptions.map((opt) => (
               <li key={opt.value}>
                 <label
                   className={cn(

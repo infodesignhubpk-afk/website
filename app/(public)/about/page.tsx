@@ -85,7 +85,7 @@ export default async function AboutPage() {
                     DH
                   </span>
                   <p className="text-sm font-semibold leading-tight text-white">
-                    Studio reception · University Road, Peshawar
+                    Studio reception · Qissa Khwani Bazaar, Peshawar
                   </p>
                 </div>
               </div>

@@ -11,7 +11,7 @@ import { getSite } from "@/lib/admin/site";
 export const metadata: Metadata = buildMetadata({
   title: "Contact | Design Hub Peshawar",
   description:
-    "Talk to Design Hub. Office on University Road, Peshawar. WhatsApp, call or email — most enquiries answered within one working day.",
+    "Talk to Design Hub. Office at Karimi Trade Center, Qissa Khwani Bazaar, Peshawar. WhatsApp, call or email — most enquiries answered within one working day.",
   path: "/contact",
 });
 

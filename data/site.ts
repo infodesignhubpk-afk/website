@@ -11,17 +11,17 @@ export const siteConfig: SiteConfig = {
   phone: env.NEXT_PUBLIC_PHONE ?? "+923001234567",
   phoneDisplay: "+92 300 123 4567",
   whatsappNumber: env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "923001234567",
-  email: env.NEXT_PUBLIC_EMAIL ?? "hello@designhub.pk",
+  email: env.NEXT_PUBLIC_EMAIL ?? "info.designhubpk@gmail.com",
   address: {
-    street: "Office 12, University Road",
+    street: "Office No. G-12, Karimi Trade Center, Qissa Khwani Bazaar Jhangi Muhallah",
     locality: "Peshawar",
     region: "Khyber Pakhtunkhwa",
     postalCode: "25000",
     country: "PK",
   },
   geo: {
-    latitude: 34.0151,
-    longitude: 71.5249,
+    latitude: 34.0070058,
+    longitude: 71.567736,
   },
   openingHours: [
     { days: "Mon–Sat", hours: "9:30 AM – 8:00 PM" },

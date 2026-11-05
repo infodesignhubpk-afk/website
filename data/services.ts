@@ -56,7 +56,7 @@ export const services: Service[] = [
       { question: "Do I get the editable source files?", answer: "Yes. Once your invoice is settled you receive editable AI, EPS, SVG, PDF and transparent PNG files. The copyright transfers to you — there are no recurring licence fees." },
       { question: "Will the logo work on signage and embroidery?", answer: "Yes. Every mark is print-tested at signage scale and embroidery resolution before sign-off. If a detail will not survive a 3-foot acrylic letter or a stitched uniform, we redraw it." },
       { question: "Do you redraw an existing logo or only design from scratch?", answer: "Both. If you have an existing mark with sentimental value we can clean up the vectors, fix proportions and add the missing variations. If the brand is moving in a new direction, we start fresh." },
-      { question: "Can I see examples of your work in Peshawar?", answer: "Yes — visit our portfolio page or arrange a meeting at our office on University Road and we will walk you through recent local projects across retail, food, real estate and education." },
+      { question: "Can I see examples of your work in Peshawar?", answer: "Yes — visit our portfolio page or arrange a meeting at our office in Karimi Trade Center, Qissa Khwani Bazaar, and we will walk you through recent local projects across retail, food, real estate and education." },
       { question: "What do I need to provide to start?", answer: "A short brief on your business, the audience you serve, three competitors you respect or want to beat, and any colour or word preferences. We have a one-page brief template if it helps." },
     ],
     relatedSlugs: ["branding-agency-peshawar", "graphic-design-peshawar", "signage-company-peshawar"],

@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
 import { CheckoutForm } from "@/components/cart/CheckoutForm";
 import { buildMetadata } from "@/lib/seo";
+import { getSite } from "@/lib/admin/site";
 
 export const metadata: Metadata = buildMetadata({
   title: "Checkout | Design Hub",
@@ -12,7 +13,8 @@ export const metadata: Metadata = buildMetadata({
   noIndex: true,
 });
 
-export default function CheckoutPage() {
+export default async function CheckoutPage() {
+  const site = await getSite();
   return (
     <>
       <PageHero
@@ -27,7 +29,7 @@ export default function CheckoutPage() {
 
       <Section surface="white" className="pt-0">
         <Container>
-          <CheckoutForm />
+          <CheckoutForm pickupAddress={`${site.address.street}, ${site.address.locality}`} />
         </Container>
       </Section>
     </>

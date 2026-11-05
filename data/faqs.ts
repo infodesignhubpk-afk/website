@@ -1,37 +1,40 @@
 import type { FAQ } from "@/types";
 
-export const homepageFAQs: FAQ[] = [
-  {
-    question: "What services does Design Hub offer in Peshawar?",
-    answer:
-      "We are a full-service branding, printing, signage and digital marketing agency. Specialisms include logo and identity design, graphic design, offset and large-format printing, flex banners, 3D and acrylic signage, vehicle branding, and Facebook / Instagram advertising. One studio, every touchpoint.",
-  },
-  {
-    question: "Where is Design Hub located?",
-    answer:
-      "Our office is on University Road, Peshawar. We work with clients across the city — Saddar, Hayatabad, Phase 5, Ring Road, Hayatabad Industrial Estate — and across Khyber Pakhtunkhwa. Country-wide delivery is available for printing.",
-  },
-  {
-    question: "How do I get a quote?",
-    answer:
-      "Use the Get a Quote form on this site, send a WhatsApp message to our team, or email hello@designhub.pk with a one-line description of your project. Most quotes come back inside one working day.",
-  },
-  {
-    question: "What does a typical project cost?",
-    answer:
-      "Pricing is published in each service's FAQ section as a guide. Logo kits start around PKR 25,000, full identity systems run higher, and printing is quoted by quantity, paper stock and finish. We never start work without a written, fixed quote.",
-  },
-  {
-    question: "Do you work with businesses outside Peshawar?",
-    answer:
-      "Yes. While our office is in Peshawar, we serve clients across KP and country-wide via courier and remote project management. Site visits are free for signage projects within Peshawar; outside the city we cost the visit separately.",
-  },
-  {
-    question: "How fast can you turn around urgent work?",
-    answer:
-      "Standard banners can be printed and finished the same day if briefed before noon. Logo design takes 7 to 14 days, brand identity 6 to 10 weeks, signage installations 2 to 4 weeks. Rush slots are available — call us and we will be honest about what is possible.",
-  },
-];
+// The office address and email come from Site Settings, so these answers follow admin edits.
+export function homepageFAQs({ address, email }: { address: string; email: string }): FAQ[] {
+  return [
+    {
+      question: "What services does Design Hub offer in Peshawar?",
+      answer:
+        "We are a full-service branding, printing, signage and digital marketing agency. Specialisms include logo and identity design, graphic design, offset and large-format printing, flex banners, 3D and acrylic signage, vehicle branding, and Facebook / Instagram advertising. One studio, every touchpoint.",
+    },
+    {
+      question: "Where is Design Hub located?",
+      answer:
+        `Our office is at ${address}. We work with clients across the city — Saddar, Hayatabad, Phase 5, Ring Road, Hayatabad Industrial Estate — and across Khyber Pakhtunkhwa. Country-wide delivery is available for printing.`,
+    },
+    {
+      question: "How do I get a quote?",
+      answer:
+        `Use the Get a Quote form on this site, send a WhatsApp message to our team, or email ${email} with a one-line description of your project. Most quotes come back inside one working day.`,
+    },
+    {
+      question: "What does a typical project cost?",
+      answer:
+        "Pricing is published in each service's FAQ section as a guide. Logo kits start around PKR 25,000, full identity systems run higher, and printing is quoted by quantity, paper stock and finish. We never start work without a written, fixed quote.",
+    },
+    {
+      question: "Do you work with businesses outside Peshawar?",
+      answer:
+        "Yes. While our office is in Peshawar, we serve clients across KP and country-wide via courier and remote project management. Site visits are free for signage projects within Peshawar; outside the city we cost the visit separately.",
+    },
+    {
+      question: "How fast can you turn around urgent work?",
+      answer:
+        "Standard banners can be printed and finished the same day if briefed before noon. Logo design takes 7 to 14 days, brand identity 6 to 10 weeks, signage installations 2 to 4 weeks. Rush slots are available — call us and we will be honest about what is possible.",
+    },
+  ];
+}
 
 export const whyChooseUs = [
   {
