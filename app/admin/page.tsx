@@ -8,6 +8,7 @@ import { listProducts } from "@/lib/admin/products";
 import { listCategories } from "@/lib/admin/categories";
 import { listOrders } from "@/lib/admin/orders";
 import { r2Configured } from "@/lib/r2";
+import { formatAmount } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
@@ -88,7 +89,7 @@ export default async function AdminHome() {
               <li key={o.id} className="flex items-center justify-between py-3 text-sm">
                 <div>
                   <p className="font-semibold">{o.reference} · {o.customerName}</p>
-                  <p className="text-xs text-muted">{o.items.length} item · {o.currency} {o.totalAmount.toLocaleString()}</p>
+                  <p className="text-xs text-muted">{o.items.length} item · {o.currency} {formatAmount(o.totalAmount)}</p>
                 </div>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                   o.status === "new" ? "bg-brand text-ink" :
@@ -113,7 +114,7 @@ export default async function AdminHome() {
               <li key={p.id} className="flex items-center justify-between py-3 text-sm">
                 <div>
                   <p className="font-semibold">{p.name}</p>
-                  <p className="text-xs text-muted">{p.currency} {p.price.toLocaleString()} · {p.published ? "Published" : "Draft"}</p>
+                  <p className="text-xs text-muted">{p.currency} {formatAmount(p.price)} · {p.published ? "Published" : "Draft"}</p>
                 </div>
                 <Link href={`/admin/products/${p.id}`} className="text-xs font-semibold underline">Edit</Link>
               </li>

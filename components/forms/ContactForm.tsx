@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema, type ContactInput } from "@/lib/validation";
 import { FormField, inputCls } from "@/components/forms/FormField";
+import { submitLead } from "@/components/forms/submitLead";
 import { Button } from "@/components/ui/Button";
 
 export function ContactForm() {
@@ -19,20 +20,15 @@ export function ContactForm() {
   const [message, setMessage] = useState<string>("");
 
   async function onSubmit(values: ContactInput) {
-    try {
-      const res = await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, kind: "contact" }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      setStatus("ok");
-      setMessage("Thanks — we will reply within one working day.");
-      reset();
-    } catch (e) {
+    const result = await submitLead({ ...values, kind: "contact" });
+    if (!result.ok) {
       setStatus("error");
-      setMessage(e instanceof Error ? e.message : "Something went wrong. Please WhatsApp us.");
+      setMessage(result.message);
+      return;
     }
+    setStatus("ok");
+    setMessage("Thanks — we will reply within one working day.");
+    reset();
   }
 
   if (status === "ok") {

@@ -4,6 +4,7 @@ import { listOrders } from "@/lib/admin/orders";
 import { PageTitle } from "@/components/admin/AdminUI";
 import { OrderRowActions } from "@/components/admin/OrderRowActions";
 import { DELIVERY_LABELS, PAYMENT_LABELS } from "@/lib/orderValidation";
+import { formatAmount } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
@@ -49,7 +50,7 @@ export default async function AdminOrdersPage() {
                 <td className="px-5 py-4 text-xs text-ink-soft">{o.items.length} item{o.items.length === 1 ? "" : "s"}</td>
                 <td className="px-5 py-4 text-xs text-ink-soft">{DELIVERY_LABELS[o.deliveryMethod] ?? o.deliveryMethod}</td>
                 <td className="px-5 py-4 text-xs text-ink-soft">{PAYMENT_LABELS[o.paymentMethod] ?? o.paymentMethod}</td>
-                <td className="px-5 py-4 text-sm font-semibold">{o.currency} {o.totalAmount.toLocaleString()}</td>
+                <td className="px-5 py-4 text-sm font-semibold">{o.currency} {formatAmount(o.totalAmount)}</td>
                 <td className="px-5 py-4 text-xs text-muted" suppressHydrationWarning>{new Date(o.createdAt).toISOString().slice(0, 16).replace("T", " ")}</td>
                 <td className="px-5 py-4">
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusStyles[o.status] ?? "bg-surface"}`}>

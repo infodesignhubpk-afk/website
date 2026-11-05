@@ -11,6 +11,9 @@ export function SiteSettingsForm({ settings }: { settings: SiteSettings }) {
   const [logoUrl, setLogoUrl] = useState(settings.logoUrl);
   const [logoWhiteUrl, setLogoWhiteUrl] = useState(settings.logoWhiteUrl);
   const [faviconUrl, setFaviconUrl] = useState(settings.faviconUrl);
+  // React resets the form after every save. A rejected save hands back what was
+  // submitted, so the fields keep the edits instead of the old saved values.
+  const field = (name: keyof SiteSettings) => state.values?.[name] ?? settings[name];
 
   return (
     <form action={action} className="space-y-8">
@@ -26,16 +29,16 @@ export function SiteSettingsForm({ settings }: { settings: SiteSettings }) {
         <h2 className="text-lg font-semibold tracking-tight">Identity</h2>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <Field label="Business name" htmlFor="name" required>
-            <TextInput id="name" name="name" defaultValue={settings.name} required />
+            <TextInput id="name" name="name" defaultValue={field("name")} required />
           </Field>
           <Field label="Legal name" htmlFor="legalName">
-            <TextInput id="legalName" name="legalName" defaultValue={settings.legalName} />
+            <TextInput id="legalName" name="legalName" defaultValue={field("legalName")} />
           </Field>
           <Field label="Public site URL" htmlFor="url" required>
-            <TextInput id="url" name="url" type="url" defaultValue={settings.url} required />
+            <TextInput id="url" name="url" type="url" defaultValue={field("url")} required />
           </Field>
           <Field label="Short description" htmlFor="shortDescription" className="md:col-span-2">
-            <TextArea id="shortDescription" name="shortDescription" defaultValue={settings.shortDescription} rows={2} />
+            <TextArea id="shortDescription" name="shortDescription" defaultValue={field("shortDescription")} rows={2} />
           </Field>
         </div>
       </section>
@@ -75,16 +78,16 @@ export function SiteSettingsForm({ settings }: { settings: SiteSettings }) {
         <h2 className="text-lg font-semibold tracking-tight">Contact</h2>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <Field label="Phone (international with +)" htmlFor="phone" required>
-            <TextInput id="phone" name="phone" type="tel" defaultValue={settings.phone} required />
+            <TextInput id="phone" name="phone" type="tel" defaultValue={field("phone")} required />
           </Field>
           <Field label="Phone (display)" htmlFor="phoneDisplay">
-            <TextInput id="phoneDisplay" name="phoneDisplay" defaultValue={settings.phoneDisplay} />
+            <TextInput id="phoneDisplay" name="phoneDisplay" defaultValue={field("phoneDisplay")} />
           </Field>
           <Field label="WhatsApp number (digits only)" htmlFor="whatsappNumber" required>
-            <TextInput id="whatsappNumber" name="whatsappNumber" defaultValue={settings.whatsappNumber} required />
+            <TextInput id="whatsappNumber" name="whatsappNumber" defaultValue={field("whatsappNumber")} required />
           </Field>
           <Field label="Email" htmlFor="email" required>
-            <TextInput id="email" name="email" type="email" defaultValue={settings.email} required />
+            <TextInput id="email" name="email" type="email" defaultValue={field("email")} required />
           </Field>
         </div>
       </section>
@@ -93,25 +96,25 @@ export function SiteSettingsForm({ settings }: { settings: SiteSettings }) {
         <h2 className="text-lg font-semibold tracking-tight">Address</h2>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <Field label="Street" htmlFor="street" className="md:col-span-2">
-            <TextInput id="street" name="street" defaultValue={settings.street} />
+            <TextInput id="street" name="street" defaultValue={field("street")} />
           </Field>
           <Field label="City / Locality" htmlFor="locality">
-            <TextInput id="locality" name="locality" defaultValue={settings.locality} />
+            <TextInput id="locality" name="locality" defaultValue={field("locality")} />
           </Field>
           <Field label="Region / Province" htmlFor="region">
-            <TextInput id="region" name="region" defaultValue={settings.region} />
+            <TextInput id="region" name="region" defaultValue={field("region")} />
           </Field>
           <Field label="Postal code" htmlFor="postalCode">
-            <TextInput id="postalCode" name="postalCode" defaultValue={settings.postalCode} />
+            <TextInput id="postalCode" name="postalCode" defaultValue={field("postalCode")} />
           </Field>
           <Field label="Country (ISO)" htmlFor="country">
-            <TextInput id="country" name="country" defaultValue={settings.country} />
+            <TextInput id="country" name="country" defaultValue={field("country")} />
           </Field>
           <Field label="Latitude" htmlFor="latitude">
-            <TextInput id="latitude" name="latitude" type="number" step="any" defaultValue={settings.latitude} />
+            <TextInput id="latitude" name="latitude" type="number" step="any" defaultValue={field("latitude")} />
           </Field>
           <Field label="Longitude" htmlFor="longitude">
-            <TextInput id="longitude" name="longitude" type="number" step="any" defaultValue={settings.longitude} />
+            <TextInput id="longitude" name="longitude" type="number" step="any" defaultValue={field("longitude")} />
           </Field>
         </div>
       </section>
@@ -121,22 +124,22 @@ export function SiteSettingsForm({ settings }: { settings: SiteSettings }) {
         <p className="mt-1 text-sm text-ink-soft">Leave empty to hide an icon from the footer.</p>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <Field label="Facebook URL" htmlFor="facebook">
-            <TextInput id="facebook" name="facebook" type="url" defaultValue={settings.facebook} placeholder="https://facebook.com/…" />
+            <TextInput id="facebook" name="facebook" type="url" defaultValue={field("facebook")} placeholder="https://facebook.com/…" />
           </Field>
           <Field label="Instagram URL" htmlFor="instagram">
-            <TextInput id="instagram" name="instagram" type="url" defaultValue={settings.instagram} />
+            <TextInput id="instagram" name="instagram" type="url" defaultValue={field("instagram")} />
           </Field>
           <Field label="LinkedIn URL" htmlFor="linkedin">
-            <TextInput id="linkedin" name="linkedin" type="url" defaultValue={settings.linkedin} />
+            <TextInput id="linkedin" name="linkedin" type="url" defaultValue={field("linkedin")} />
           </Field>
           <Field label="YouTube URL" htmlFor="youtube">
-            <TextInput id="youtube" name="youtube" type="url" defaultValue={settings.youtube} />
+            <TextInput id="youtube" name="youtube" type="url" defaultValue={field("youtube")} />
           </Field>
           <Field label="TikTok URL" htmlFor="tiktok">
-            <TextInput id="tiktok" name="tiktok" type="url" defaultValue={settings.tiktok} />
+            <TextInput id="tiktok" name="tiktok" type="url" defaultValue={field("tiktok")} />
           </Field>
           <Field label="WhatsApp Channel URL" htmlFor="whatsappChannel">
-            <TextInput id="whatsappChannel" name="whatsappChannel" type="url" defaultValue={settings.whatsappChannel} />
+            <TextInput id="whatsappChannel" name="whatsappChannel" type="url" defaultValue={field("whatsappChannel")} />
           </Field>
         </div>
       </section>

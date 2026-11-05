@@ -6,6 +6,7 @@ import { PageTitle } from "@/components/admin/AdminUI";
 import { OrderRowActions } from "@/components/admin/OrderRowActions";
 import { ArrowRightIcon } from "@/components/ui/Icons";
 import { DELIVERY_LABELS, PAYMENT_LABELS } from "@/lib/orderValidation";
+import { formatAmount, lineTotal } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
@@ -39,8 +40,8 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                     <p className="text-xs text-muted">/{it.productSlug}</p>
                   </div>
                   <div className="text-right text-sm">
-                    <p>{it.quantity} × {it.currency} {it.unitPrice.toLocaleString()}</p>
-                    <p className="text-xs text-muted">{it.currency} {(it.quantity * it.unitPrice).toLocaleString()}</p>
+                    <p>{it.quantity} × {it.currency} {formatAmount(it.unitPrice)}</p>
+                    <p className="text-xs text-muted">{it.currency} {formatAmount(lineTotal(it.quantity, it.unitPrice))}</p>
                   </div>
                 </li>
               ))}
@@ -48,15 +49,15 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
             <dl className="mt-4 space-y-1.5 border-t border-line pt-4 text-sm">
               <div className="flex items-center justify-between">
                 <dt className="text-ink-soft">Subtotal</dt>
-                <dd className="font-semibold">{order.currency} {order.subtotal.toLocaleString()}</dd>
+                <dd className="font-semibold">{order.currency} {formatAmount(order.subtotal)}</dd>
               </div>
               <div className="flex items-center justify-between">
                 <dt className="text-ink-soft">Delivery</dt>
-                <dd className="font-semibold">{order.currency} {order.deliveryFee.toLocaleString()}</dd>
+                <dd className="font-semibold">{order.currency} {formatAmount(order.deliveryFee)}</dd>
               </div>
               <div className="mt-2 flex items-center justify-between border-t border-line pt-3 text-base font-bold">
                 <dt>Total</dt>
-                <dd>{order.currency} {order.totalAmount.toLocaleString()}</dd>
+                <dd>{order.currency} {formatAmount(order.totalAmount)}</dd>
               </div>
             </dl>
           </section>
@@ -119,7 +120,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
               ) : null}
               <div>
                 <dt className="text-xs uppercase tracking-widest text-muted">Fee</dt>
-                <dd className="mt-0.5">{order.currency} {order.deliveryFee.toLocaleString()}</dd>
+                <dd className="mt-0.5">{order.currency} {formatAmount(order.deliveryFee)}</dd>
               </div>
             </dl>
           </section>

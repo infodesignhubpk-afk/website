@@ -181,6 +181,24 @@ export async function getProductById(id: string): Promise<AdminProduct | null> {
   return rows[0] ? rowToProduct(rows[0]) : null;
 }
 
+/**
+ * Loads several products in one query (for pricing an order). Unknown ids are
+ * simply absent from the result. Unlike the list helpers it throws when D1 is
+ * unconfigured or errors, so a caller never mistakes an outage for "no such
+ * product". D1 binds at most 100 parameters per query; orders cap items at 50.
+ */
+export async function getProductsByIds(ids: string[]): Promise<AdminProduct[]> {
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return [];
+  await ensureSeed();
+  const placeholders = unique.map(() => "?").join(", ");
+  const rows = await d1All<ProductRow>(
+    `SELECT id, slug, data, published, created_at, updated_at FROM products WHERE id IN (${placeholders})`,
+    unique,
+  );
+  return rows.map(rowToProduct);
+}
+
 export async function getProductBySlug(slug: string): Promise<AdminProduct | null> {
   if (!d1Configured) return null;
   await ensureSeed();

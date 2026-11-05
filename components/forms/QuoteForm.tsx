@@ -5,6 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { quoteSchema, type QuoteInput } from "@/lib/validation";
 import { FormField, inputCls } from "@/components/forms/FormField";
+import { submitLead } from "@/components/forms/submitLead";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { CheckIcon } from "@/components/ui/Icons";
@@ -57,20 +58,15 @@ export function QuoteForm({ services }: Props) {
   const timeline = useWatch({ control, name: "timeline" });
 
   async function onSubmit(values: QuoteInput) {
-    try {
-      const res = await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, kind: "quote" }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      setStatus("ok");
-      setMessage("Quote request received. A project manager will reply within one working day with a fixed-scope proposal.");
-      reset();
-    } catch (e) {
+    const result = await submitLead({ ...values, kind: "quote" });
+    if (!result.ok) {
       setStatus("error");
-      setMessage(e instanceof Error ? e.message : "Something went wrong. Please WhatsApp us.");
+      setMessage(result.message);
+      return;
     }
+    setStatus("ok");
+    setMessage("Quote request received. A project manager will reply within one working day with a fixed-scope proposal.");
+    reset();
   }
 
   async function next() {

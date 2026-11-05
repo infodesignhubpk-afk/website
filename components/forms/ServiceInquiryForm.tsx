@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { serviceInquirySchema, type ServiceInquiryInput } from "@/lib/validation";
 import { FormField, inputCls } from "@/components/forms/FormField";
+import { submitLead } from "@/components/forms/submitLead";
 import { Button } from "@/components/ui/Button";
 
 type Props = {
@@ -27,20 +28,15 @@ export function ServiceInquiryForm({ defaultService }: Props) {
   const [message, setMessage] = useState<string>("");
 
   async function onSubmit(values: ServiceInquiryInput) {
-    try {
-      const res = await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, kind: "service" }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      setStatus("ok");
-      setMessage("Thanks — a project manager will reply within one working day.");
-      reset({ service: defaultService, name: "", phone: "", brief: "", website: "" });
-    } catch (e) {
+    const result = await submitLead({ ...values, kind: "service" });
+    if (!result.ok) {
       setStatus("error");
-      setMessage(e instanceof Error ? e.message : "Something went wrong. Please WhatsApp us.");
+      setMessage(result.message);
+      return;
     }
+    setStatus("ok");
+    setMessage("Thanks — a project manager will reply within one working day.");
+    reset({ service: defaultService, name: "", phone: "", brief: "", website: "" });
   }
 
   if (status === "ok") {

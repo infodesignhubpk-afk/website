@@ -2,6 +2,7 @@ import "server-only";
 import { d1All, d1Exec, d1Configured, nowMs } from "@/lib/db";
 import crypto from "crypto";
 import { newId } from "@/lib/store";
+import { orderAmountOk, orderTotals } from "@/lib/orderValidation";
 import type {
   DeliveryAddress,
   DeliveryMethod,
@@ -72,9 +73,13 @@ type CreateOrderInput = {
 
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
   const nowIso = new Date().toISOString();
-  const subtotal = input.items.reduce((sum, it) => sum + it.unitPrice * it.quantity, 0);
   const deliveryFee = input.deliveryFee ?? 0;
-  const total = subtotal + deliveryFee;
+  const { subtotal, total } = orderTotals(input.items, deliveryFee);
+  // A non-finite total is stored as null and breaks every page that lists it.
+  // /api/orders rejects these first; this is the last line of defence.
+  if (!orderAmountOk(subtotal) || !orderAmountOk(total)) {
+    throw new Error("Order total is out of range.");
+  }
   const currency = input.items[0]?.currency ?? "PKR";
   const id = newId("ord");
   // Random, not clock-derived: the previous `Date.now().slice(-7)` was both

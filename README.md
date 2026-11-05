@@ -46,7 +46,8 @@ See `.env.example` for the full list. Required:
 | `NEXT_PUBLIC_PHONE` | International phone (`+92...`) used in tel: links |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | Digits only, e.g. `923001234567` |
 | `NEXT_PUBLIC_EMAIL` | Public contact email |
-| `ADMIN_PASSCODE` | Passcode for `/admin` login |
+| `ADMIN_PASSCODE` | Passcode for `/admin` login (16+ random characters) |
+| `ORDER_TOKEN_SECRET` | 32+ random characters; signs order-confirmation links. No fallback |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | Cloudflare R2 credentials for media uploads |
 | `R2_PUBLIC_BASE_URL` | Public URL base for R2 objects (R2 dev URL or your custom domain) |
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_D1_DATABASE_ID`, `CLOUDFLARE_API_TOKEN` | Cloudflare D1 credentials for admin content storage |
@@ -63,7 +64,9 @@ Optional:
 
 ## Admin panel
 
-Browse to `/admin` and enter the passcode set in `ADMIN_PASSCODE` (a per-session HMAC-signed cookie keeps you logged in for 7 days).
+Browse to `/admin` and enter the passcode set in `ADMIN_PASSCODE`. Signing in starts a server-side session (D1 table `admin_sessions`, which stores only a hash of the cookie token) that lasts 7 days. **Logout** ends that session; **Sign out all devices** ends every session; changing `ADMIN_PASSCODE` and redeploying ends them all too.
+
+Login needs D1. Wrong passcodes are rate-limited per IP and across all IPs in 15-minute windows (rules in `lib/loginPolicy.ts`, counts in the D1 table `rate_limits`). If you lock yourself out, wait out the window or run `DELETE FROM rate_limits WHERE bucket IN ('admin-login-ip','admin-login-all');` in the D1 console.
 
 Sections:
 
@@ -91,7 +94,7 @@ The Media admin uploads images directly to R2 from the browser via `/api/admin/u
 
 1. Create a database in the Cloudflare D1 dashboard (Workers & Pages → D1) — give it a name like `designhub`.
 2. Copy the **Database ID** from the Settings tab.
-3. Open the **Console** tab and paste the contents of [`db/schema.sql`](db/schema.sql), then run it. This creates the tables (`site_settings`, `seo_settings`, `blogs`, `products`, `categories`, `orders`) plus indexes.
+3. Open the **Console** tab and paste the contents of [`db/schema.sql`](db/schema.sql), then run it. This creates the tables (`site_settings`, `seo_settings`, `blogs`, `products`, `categories`, `orders`, `rate_limits`, `admin_sessions`) plus indexes. The last two are also created automatically on first use.
 4. Create an API token (My Profile → API Tokens → Create Token) with the **D1 → Edit** permission scoped to your account. Copy the token.
 5. Drop `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_D1_DATABASE_ID` and `CLOUDFLARE_API_TOKEN` into `.env.local` (and into Vercel's Environment Variables for production).
 
@@ -99,8 +102,9 @@ On first read, the admin libs auto-seed the empty database with default content 
 
 ## Lead and order capture
 
-- `/api/lead` — receives contact, service inquiry and quote form submissions. Validated with Zod, honeypot field rejects bots, optionally forwards to `LEAD_WEBHOOK_URL`.
-- `/api/orders` — receives product order requests. Persisted to D1 and visible in `/admin/orders`. Optionally forwarded to the same webhook with `kind: "order"`.
+- `/api/lead` — receives contact, service inquiry and quote form submissions. Validated with Zod, honeypot field rejects bots, optionally forwards to `LEAD_WEBHOOK_URL`. Leads are not stored, so if neither the email nor the webhook goes through the visitor is told to use WhatsApp or phone instead. Limits: 16 KB body, 6 leads per IP per 10 minutes, 15 per hour across all IPs.
+- `/api/orders` — receives product order requests. Persisted to D1 and visible in `/admin/orders`. Optionally forwarded to the same webhook with `kind: "order"`. Names and prices always come from the products table; a cart with a stale price gets a 409 with the current one. Limits: 32 KB body, 50 line items, 10 orders per IP per 10 minutes.
+- Both routes only accept same-site `application/json` requests.
 
 ## SEO
 
@@ -158,7 +162,8 @@ This project is configured for Vercel out of the box.
 2. Import the repo on Vercel (auto-detects Next.js + pnpm via `pnpm-lock.yaml`).
 3. Add the environment variables from `.env.example` in **Project Settings → Environment Variables**. At minimum:
    - `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_PHONE`, `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_EMAIL`
-   - `ADMIN_PASSCODE`
+   - `ADMIN_PASSCODE` and `ORDER_TOKEN_SECRET`
+   - `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_D1_DATABASE_ID`, `CLOUDFLARE_API_TOKEN`
    - All `R2_*` credentials (admin content **requires** R2 in production — Vercel's filesystem is read-only)
 4. Deploy. The configured region is `bom1` (Mumbai) for Pakistan latency — change in `vercel.json` if you need another region.
 
@@ -170,7 +175,7 @@ What's already wired for Vercel:
 - **`engines.node`** — `>=20.0.0`.
 - **All API routes set `runtime = "nodejs"`** — required for the AWS SDK (it doesn't run on edge).
 - **Admin pages set `dynamic = "force-dynamic"`** — they read live state.
-- **Image remote patterns** — `next/image` allowlists R2 dev URLs, your custom R2 domain, and Cloudflare `imagedelivery.net`.
+- **Image remote patterns** — `next/image` only optimises images from the site's own R2 bucket and the host in `R2_PUBLIC_BASE_URL`. Add any other image host in `next.config.ts`.
 - **Security headers** — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` set globally in `next.config.ts`.
 
 ## Known caveats

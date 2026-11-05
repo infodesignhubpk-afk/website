@@ -48,7 +48,10 @@ const checkoutSchema = z
     postalCode: z.string().max(20).optional().or(z.literal("")),
     landmark: z.string().max(200).optional().or(z.literal("")),
     notes: z.string().max(2000).optional().or(z.literal("")),
-    website: z.string().max(0).optional().default(""),
+    // Honeypot. Same rule as the server: any short value passes here, and the
+    // API answers a filled one with a silent success, so a bot is never told
+    // which field gave it away.
+    website: z.string().max(500).optional().default(""),
   })
   .superRefine((v, ctx) => {
     if (v.paymentMethod === "cod" && v.deliveryMethod === "courier") {
@@ -62,8 +65,26 @@ const checkoutSchema = z
 
 type FormInput = z.input<typeof checkoutSchema>;
 
+const ORDER_FAILED = "We could not place your order. Please check your connection and try again, or WhatsApp us.";
+
+type RepricedLine = { productId: string; productSlug: string; productName: string; unitPrice: number; currency: string };
+
+/** The catalogue values a 409 from /api/orders sends for lines whose price or currency changed. */
+function readRepriced(data: unknown): RepricedLine[] {
+  if (typeof data !== "object" || data === null || !("repriced" in data) || !Array.isArray(data.repriced)) return [];
+  return data.repriced.filter(
+    (r: unknown): r is RepricedLine =>
+      typeof r === "object" && r !== null &&
+      "productId" in r && typeof r.productId === "string" &&
+      "productSlug" in r && typeof r.productSlug === "string" &&
+      "productName" in r && typeof r.productName === "string" &&
+      "unitPrice" in r && typeof r.unitPrice === "number" && Number.isFinite(r.unitPrice) &&
+      "currency" in r && typeof r.currency === "string",
+  );
+}
+
 export function CheckoutForm() {
-  const { items, subtotal, currency, hydrated, clear } = useCart();
+  const { items, subtotal, currency, hydrated, clear, add, remove } = useCart();
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -155,6 +176,7 @@ export function CheckoutForm() {
             }
           : undefined,
       paymentMethod: values.paymentMethod,
+      website: values.website || undefined,
       items: items.map((it) => ({
         productId: it.productId,
         productSlug: it.productSlug,
@@ -172,22 +194,43 @@ export function CheckoutForm() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        let msg = `Order failed (${res.status})`;
+        // The API answers every failure with a customer-safe `error` (409 names
+        // unavailable or repriced items, 429 asks to wait); anything else gets the fallback.
+        let msg = ORDER_FAILED;
         try {
-          const data = await res.json();
-          if (data?.error) msg = data.error;
+          const data: unknown = await res.json();
+          if (typeof data === "object" && data !== null && "error" in data && typeof data.error === "string" && data.error) {
+            msg = data.error;
+          }
+          // A price changed since the item was added: refresh those lines so the
+          // total shown is the one the order will be placed at. add() keeps an
+          // existing line's price, so each line is removed and re-added.
+          if (res.status === 409) {
+            for (const r of readRepriced(data)) {
+              const line = items.find((it) => it.productId === r.productId);
+              if (!line) continue;
+              remove(line.productId);
+              add(
+                { ...line, productSlug: r.productSlug, productName: r.productName, unitPrice: r.unitPrice, currency: r.currency },
+                line.quantity,
+              );
+            }
+          }
         } catch {}
-        throw new Error(msg);
+        setSubmitError(msg);
+        return;
       }
       const data = (await res.json()) as { reference?: string; token?: string };
       const ref = data.reference ?? "";
+      // The token can be empty (confirmation tokens disabled on the server); the
+      // success page then shows the reference without the order summary.
       const token = data.token ?? "";
       clear();
       const query = new URLSearchParams({ ref });
       if (token) query.set("t", token);
       router.push(`/checkout/success?${query.toString()}`);
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Order failed.");
+    } catch {
+      setSubmitError(ORDER_FAILED);
     }
   }
 
@@ -205,9 +248,10 @@ export function CheckoutForm() {
     postalCode: "Postal code",
     landmark: "Landmark",
     notes: "Notes",
-    website: "Spam check",
+    website: "",
   };
-  const errorList = (Object.keys(errors) as (keyof FormInput)[]).map((k) => ({
+  // The honeypot is never listed, so a bot filling every input is not told which one to clear.
+  const errorList = (Object.keys(errors) as (keyof FormInput)[]).filter((k) => k !== "website").map((k) => ({
     key: k,
     label: FIELD_LABELS[k] ?? k,
     message: errors[k]?.message,

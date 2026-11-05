@@ -17,35 +17,49 @@ export const phoneSchema = z
     },
   );
 
+// Google Analytics 4 measurement ID, e.g. G-ABC123XYZ. Nothing else is ever
+// written into the inline gtag script.
+export const GA_MEASUREMENT_ID = /^G-[A-Z0-9]+$/;
+
+// Every lead field has a length cap, so one request cannot carry pages of text.
+const tooLong = (max: number) => `Please keep this to ${max} characters or fewer`;
+
+// Honeypot: a hidden field real visitors never fill. Any short value passes
+// here; /api/lead answers a filled one with a silent fake success, so a bot
+// learns nothing about the rule.
+const honeypot = z.string().max(200).optional().default("");
+
 export const contactSchema = z.object({
-  name: z.string().min(2, "Please enter your name").max(80),
+  name: z.string().min(2, "Please enter your name").max(120, tooLong(120)),
   phone: phoneSchema,
-  email: z.string().email("Enter a valid email").optional().or(z.literal("")),
-  message: z.string().min(10, "Tell us a bit more").max(2000),
-  website: z.string().max(0).optional().default(""),
+  email: z.string().email("Enter a valid email").max(200, tooLong(200)).optional().or(z.literal("")),
+  message: z.string().min(10, "Tell us a bit more").max(5000, tooLong(5000)),
+  website: honeypot,
 });
 
 export const serviceInquirySchema = z.object({
-  name: z.string().min(2).max(80),
+  name: z.string().min(2).max(120, tooLong(120)),
   phone: phoneSchema,
-  service: z.string().min(2),
-  brief: z.string().min(10).max(2000),
-  website: z.string().max(0).optional().default(""),
+  service: z.string().min(2).max(120),
+  brief: z.string().min(10).max(5000, tooLong(5000)),
+  website: honeypot,
 });
 
 export const quoteSchema = z.object({
-  service: z.string().min(2),
-  budget: z.string().optional(),
-  timeline: z.string().optional(),
-  details: z.string().min(10).max(2000),
-  name: z.string().min(2).max(80),
+  service: z.string().min(2).max(120),
+  budget: z.string().max(120).optional(),
+  timeline: z.string().max(120).optional(),
+  details: z.string().min(10).max(5000, tooLong(5000)),
+  name: z.string().min(2).max(120, tooLong(120)),
   phone: phoneSchema,
-  email: z.string().email().optional().or(z.literal("")),
-  business: z.string().max(120).optional().or(z.literal("")),
-  website: z.string().max(0).optional().default(""),
+  email: z.string().email().max(200, tooLong(200)).optional().or(z.literal("")),
+  business: z.string().max(120, tooLong(120)).optional().or(z.literal("")),
+  website: honeypot,
 });
 
-export const leadSchema = z.union([
+// Discriminated on "kind" so a failure names the fields of the form that was
+// sent instead of one nested error per union member.
+export const leadSchema = z.discriminatedUnion("kind", [
   contactSchema.extend({ kind: z.literal("contact") }),
   serviceInquirySchema.extend({ kind: z.literal("service") }),
   quoteSchema.extend({ kind: z.literal("quote") }),

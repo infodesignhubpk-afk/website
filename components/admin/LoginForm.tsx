@@ -15,12 +15,11 @@ export function LoginForm() {
           id="passcode"
           name="passcode"
           type="password"
-          inputMode="numeric"
-          autoComplete="one-time-code"
+          autoComplete="current-password"
           required
           minLength={4}
           autoFocus
-          className="mt-2 w-full rounded-xl border border-line bg-bg px-4 py-3 text-lg tracking-[0.4em] text-center font-semibold focus:border-ink focus:outline-none"
+          className="mt-2 w-full rounded-xl border border-line bg-bg px-4 py-3 text-base focus:border-ink focus:outline-none"
         />
       </div>
       {state.error ? (

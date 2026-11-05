@@ -9,13 +9,29 @@ import crypto from "crypto";
  * shows the customer's name, phone number and delivery address, so it is gated
  * on a token derived from the reference instead — issued once, when the order
  * is created, and verifiable without storing anything.
+ *
+ * Every buyer receives a reference and its token, i.e. a known message and its
+ * HMAC, so the key must be a dedicated high-entropy secret that guards nothing
+ * else. It used to fall back to ADMIN_PASSCODE, which turned every order into an
+ * offline brute-force oracle for the admin login. Without ORDER_TOKEN_SECRET (32+
+ * characters) no token is issued and none verifies: customers still get their
+ * reference, just not the detailed summary.
  */
 
+const MIN_SECRET_LENGTH = 32;
+
+let warned = false;
+
 function secret(): string {
-  // ADMIN_PASSCODE is a deliberate fallback so the gate is live in every
-  // environment that already has one configured. Set ORDER_TOKEN_SECRET to
-  // rotate order tokens without changing the admin passcode.
-  return process.env.ORDER_TOKEN_SECRET || process.env.ADMIN_PASSCODE || "";
+  const s = process.env.ORDER_TOKEN_SECRET ?? "";
+  if (s.length >= MIN_SECRET_LENGTH) return s;
+  if (!warned) {
+    warned = true;
+    console.error(
+      `[orderToken] ORDER_TOKEN_SECRET is missing or shorter than ${MIN_SECRET_LENGTH} characters; order confirmation tokens are disabled.`,
+    );
+  }
+  return "";
 }
 
 export function signOrderToken(reference: string): string {

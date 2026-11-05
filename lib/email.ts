@@ -1,8 +1,13 @@
 import nodemailer from "nodemailer";
 import type { LeadInput } from "@/lib/validation";
 import type { Order } from "@/types/admin";
+import { formatAmount, lineTotal } from "@/lib/money";
 
 const RECIPIENT_EMAIL = process.env.NOTIFICATION_EMAIL || "info.designhubpk@gmail.com";
+
+// A stalled provider must not hold a request (or an after() task) open until
+// the platform kills it, so every network call here is bounded.
+const RESEND_TIMEOUT_MS = 10_000;
 
 function getTransporter() {
   const host = process.env.SMTP_HOST || "smtp.gmail.com";
@@ -24,12 +29,19 @@ function getTransporter() {
       user,
       pass,
     },
+    // Since nodemailer 10.1 the wait for the greeting also counts against
+    // connectionTimeout; socketTimeout bounds any later stall.
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 20_000,
   });
 }
 
-function escapeHtml(str: string | undefined | null): string {
-  if (!str) return "";
-  return str
+// Every value interpolated into the HTML templates goes through this, numbers
+// and currency codes included: all of it comes from form input or the database.
+function escapeHtml(value: string | number | undefined | null): string {
+  if (value === undefined || value === null) return "";
+  return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -60,7 +72,7 @@ export async function sendLeadNotificationEmail(lead: LeadInput) {
     title = `Quote Request: ${lead.service}`;
     rowsHtml = `
       <tr><td style="padding: 8px 12px; font-weight: bold; width: 140px; color: #555;">Name:</td><td style="padding: 8px 12px; color: #111;">${escapeHtml(lead.name)}</td></tr>
-      <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Phone / WhatsApp:</td><td style="padding: 8px 12px; color: #111;"><a href="tel:${escapeHtml(lead.phone)}" style="color: #111; text-decoration: none;">${escapeHtml(lead.phone)}</a> ${waLink ? `&nbsp;(<a href="${waLink}" style="color: #16a34a; font-weight: bold;" target="_blank">Chat on WhatsApp</a>)` : ""}</td></tr>
+      <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Phone / WhatsApp:</td><td style="padding: 8px 12px; color: #111;"><a href="tel:${escapeHtml(lead.phone)}" style="color: #111; text-decoration: none;">${escapeHtml(lead.phone)}</a> ${waLink ? `&nbsp;(<a href="${escapeHtml(waLink)}" style="color: #16a34a; font-weight: bold;" target="_blank">Chat on WhatsApp</a>)` : ""}</td></tr>
       <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Email:</td><td style="padding: 8px 12px; color: #111;">${lead.email ? `<a href="mailto:${escapeHtml(lead.email)}">${escapeHtml(lead.email)}</a>` : "Not provided"}</td></tr>
       <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Business:</td><td style="padding: 8px 12px; color: #111;">${escapeHtml(lead.business) || "Not provided"}</td></tr>
       <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Service:</td><td style="padding: 8px 12px; font-weight: bold; color: #111;">${escapeHtml(lead.service)}</td></tr>
@@ -73,7 +85,7 @@ export async function sendLeadNotificationEmail(lead: LeadInput) {
     title = `Service Inquiry: ${lead.service}`;
     rowsHtml = `
       <tr><td style="padding: 8px 12px; font-weight: bold; width: 140px; color: #555;">Name:</td><td style="padding: 8px 12px; color: #111;">${escapeHtml(lead.name)}</td></tr>
-      <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Phone / WhatsApp:</td><td style="padding: 8px 12px; color: #111;"><a href="tel:${escapeHtml(lead.phone)}" style="color: #111; text-decoration: none;">${escapeHtml(lead.phone)}</a> ${waLink ? `&nbsp;(<a href="${waLink}" style="color: #16a34a; font-weight: bold;" target="_blank">Chat on WhatsApp</a>)` : ""}</td></tr>
+      <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Phone / WhatsApp:</td><td style="padding: 8px 12px; color: #111;"><a href="tel:${escapeHtml(lead.phone)}" style="color: #111; text-decoration: none;">${escapeHtml(lead.phone)}</a> ${waLink ? `&nbsp;(<a href="${escapeHtml(waLink)}" style="color: #16a34a; font-weight: bold;" target="_blank">Chat on WhatsApp</a>)` : ""}</td></tr>
       <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Service:</td><td style="padding: 8px 12px; font-weight: bold; color: #111;">${escapeHtml(lead.service)}</td></tr>
       <tr><td style="padding: 8px 12px; font-weight: bold; color: #555; vertical-align: top;">Brief:</td><td style="padding: 8px 12px; color: #111; white-space: pre-wrap; line-height: 1.5;">${escapeHtml(lead.brief)}</td></tr>
     `;
@@ -82,7 +94,7 @@ export async function sendLeadNotificationEmail(lead: LeadInput) {
     title = "Contact Form Message";
     rowsHtml = `
       <tr><td style="padding: 8px 12px; font-weight: bold; width: 140px; color: #555;">Name:</td><td style="padding: 8px 12px; color: #111;">${escapeHtml(lead.name)}</td></tr>
-      <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Phone / WhatsApp:</td><td style="padding: 8px 12px; color: #111;"><a href="tel:${escapeHtml(lead.phone)}" style="color: #111; text-decoration: none;">${escapeHtml(lead.phone)}</a> ${waLink ? `&nbsp;(<a href="${waLink}" style="color: #16a34a; font-weight: bold;" target="_blank">Chat on WhatsApp</a>)` : ""}</td></tr>
+      <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Phone / WhatsApp:</td><td style="padding: 8px 12px; color: #111;"><a href="tel:${escapeHtml(lead.phone)}" style="color: #111; text-decoration: none;">${escapeHtml(lead.phone)}</a> ${waLink ? `&nbsp;(<a href="${escapeHtml(waLink)}" style="color: #16a34a; font-weight: bold;" target="_blank">Chat on WhatsApp</a>)` : ""}</td></tr>
       <tr><td style="padding: 8px 12px; font-weight: bold; color: #555;">Email:</td><td style="padding: 8px 12px; color: #111;">${lead.email ? `<a href="mailto:${escapeHtml(lead.email)}">${escapeHtml(lead.email)}</a>` : "Not provided"}</td></tr>
       <tr><td style="padding: 8px 12px; font-weight: bold; color: #555; vertical-align: top;">Message:</td><td style="padding: 8px 12px; color: #111; white-space: pre-wrap; line-height: 1.5;">${escapeHtml(lead.message)}</td></tr>
     `;
@@ -105,14 +117,14 @@ export async function sendLeadNotificationEmail(lead: LeadInput) {
             </table>
             ${waLink ? `
               <div style="text-align: center; margin: 24px 0 10px 0;">
-                <a href="${waLink}" style="display: inline-block; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 24px; border-radius: 30px; font-size: 15px;" target="_blank">
+                <a href="${escapeHtml(waLink)}" style="display: inline-block; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 24px; border-radius: 30px; font-size: 15px;" target="_blank">
                   Reply via WhatsApp
                 </a>
               </div>
             ` : ""}
           </div>
           <div style="background: #f7f7f5; padding: 12px 24px; border-top: 1px solid #e6e6e6; font-size: 12px; color: #888; text-align: center;">
-            Design Hub Automated Notification • Received at ${new Date().toLocaleString()}
+            Design Hub Automated Notification • Received at ${escapeHtml(new Date().toLocaleString())}
           </div>
         </div>
       </body>
@@ -137,6 +149,7 @@ export async function sendLeadNotificationEmail(lead: LeadInput) {
           subject,
           html,
         }),
+        signal: AbortSignal.timeout(RESEND_TIMEOUT_MS),
       });
       if (resendRes.ok) {
         return { success: true, provider: "resend" };
@@ -184,9 +197,9 @@ export async function sendOrderNotificationEmail(order: Order) {
       (item) => `
       <tr>
         <td style="padding: 8px 12px; border-bottom: 1px solid #eee;">${escapeHtml(item.productName)}</td>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #eee; text-align: right;">${item.currency} ${item.unitPrice.toLocaleString()}</td>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">${item.currency} ${(item.quantity * item.unitPrice).toLocaleString()}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #eee; text-align: center;">${escapeHtml(item.quantity)}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #eee; text-align: right;">${escapeHtml(item.currency)} ${escapeHtml(formatAmount(item.unitPrice))}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">${escapeHtml(item.currency)} ${escapeHtml(formatAmount(lineTotal(item.quantity, item.unitPrice)))}</td>
       </tr>
     `
     )
@@ -204,7 +217,7 @@ export async function sendOrderNotificationEmail(order: Order) {
             <h2 style="font-size: 16px; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 8px;">Customer Details</h2>
             <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px;">
               <tr><td style="padding: 6px 0; font-weight: bold; width: 140px; color: #555;">Customer Name:</td><td>${escapeHtml(order.customerName)}</td></tr>
-              <tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Phone / WhatsApp:</td><td><a href="tel:${escapeHtml(order.customerPhone)}">${escapeHtml(order.customerPhone)}</a> ${waLink ? `&nbsp;(<a href="${waLink}" style="color: #16a34a; font-weight: bold;" target="_blank">WhatsApp</a>)` : ""}</td></tr>
+              <tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Phone / WhatsApp:</td><td><a href="tel:${escapeHtml(order.customerPhone)}">${escapeHtml(order.customerPhone)}</a> ${waLink ? `&nbsp;(<a href="${escapeHtml(waLink)}" style="color: #16a34a; font-weight: bold;" target="_blank">WhatsApp</a>)` : ""}</td></tr>
               <tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Email:</td><td>${order.customerEmail ? `<a href="mailto:${escapeHtml(order.customerEmail)}">${escapeHtml(order.customerEmail)}</a>` : "Not provided"}</td></tr>
               <tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Business:</td><td>${escapeHtml(order.customerBusiness) || "Not provided"}</td></tr>
               <tr><td style="padding: 6px 0; font-weight: bold; color: #555;">Delivery Method:</td><td>${escapeHtml(order.deliveryMethod)}</td></tr>
@@ -228,22 +241,22 @@ export async function sendOrderNotificationEmail(order: Order) {
               <tfoot>
                 <tr>
                   <td colspan="3" style="padding: 8px 12px; text-align: right; font-weight: bold;">Subtotal:</td>
-                  <td style="padding: 8px 12px; text-align: right; font-weight: bold;">${order.currency} ${order.subtotal.toLocaleString()}</td>
+                  <td style="padding: 8px 12px; text-align: right; font-weight: bold;">${escapeHtml(order.currency)} ${escapeHtml(formatAmount(order.subtotal))}</td>
                 </tr>
                 <tr>
                   <td colspan="3" style="padding: 8px 12px; text-align: right; color: #666;">Delivery Fee:</td>
-                  <td style="padding: 8px 12px; text-align: right; color: #666;">${order.currency} ${order.deliveryFee.toLocaleString()}</td>
+                  <td style="padding: 8px 12px; text-align: right; color: #666;">${escapeHtml(order.currency)} ${escapeHtml(formatAmount(order.deliveryFee))}</td>
                 </tr>
                 <tr style="font-size: 16px;">
                   <td colspan="3" style="padding: 10px 12px; text-align: right; font-weight: bold; border-top: 2px solid #111;">Total Amount:</td>
-                  <td style="padding: 10px 12px; text-align: right; font-weight: bold; border-top: 2px solid #111; color: #f5a732;">${order.currency} ${order.totalAmount.toLocaleString()}</td>
+                  <td style="padding: 10px 12px; text-align: right; font-weight: bold; border-top: 2px solid #111; color: #f5a732;">${escapeHtml(order.currency)} ${escapeHtml(formatAmount(order.totalAmount))}</td>
                 </tr>
               </tfoot>
             </table>
 
             ${waLink ? `
               <div style="text-align: center; margin: 24px 0 10px 0;">
-                <a href="${waLink}" style="display: inline-block; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 24px; border-radius: 30px; font-size: 15px;" target="_blank">
+                <a href="${escapeHtml(waLink)}" style="display: inline-block; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 24px; border-radius: 30px; font-size: 15px;" target="_blank">
                   Message Customer on WhatsApp
                 </a>
               </div>
@@ -272,6 +285,7 @@ export async function sendOrderNotificationEmail(order: Order) {
           subject,
           html,
         }),
+        signal: AbortSignal.timeout(RESEND_TIMEOUT_MS),
       });
       if (resendRes.ok) {
         return { success: true, provider: "resend" };

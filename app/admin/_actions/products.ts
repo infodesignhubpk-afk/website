@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { createProduct, deleteProduct, updateProduct } from "@/lib/admin/products";
+import { MAX_UNIT_PRICE } from "@/lib/orderValidation";
 
 export type ProductActionResult = { ok?: boolean; error?: string };
 
@@ -60,6 +61,10 @@ export async function saveProductAction(prev: ProductActionResult, formData: For
 
   if (!payload.name) return { error: "Name is required." };
   if (payload.price < 0) return { error: "Price must be a positive number." };
+  // Checkout refuses anything above this, so a higher price could never be ordered online.
+  if (payload.price > MAX_UNIT_PRICE) {
+    return { error: `Price must be at most ${MAX_UNIT_PRICE.toLocaleString()}. Quote larger jobs directly.` };
+  }
 
   try {
     if (id) {

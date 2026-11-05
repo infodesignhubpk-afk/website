@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LogoutButton } from "@/components/admin/LogoutButton";
+import { SignOutAllButton } from "@/components/admin/SignOutAllButton";
 import { ExternalIcon } from "@/components/ui/Icons";
 
 export function AdminTopbar({ siteName }: { siteName: string }) {
@@ -18,6 +19,7 @@ export function AdminTopbar({ siteName }: { siteName: string }) {
         >
           <ExternalIcon size={14} /> View site
         </Link>
+        <SignOutAllButton />
         <LogoutButton />
       </div>
     </div>

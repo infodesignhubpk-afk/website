@@ -106,3 +106,25 @@ CREATE TABLE IF NOT EXISTS portfolio_items (
 CREATE INDEX IF NOT EXISTS idx_portfolio_published ON portfolio_items(published);
 CREATE INDEX IF NOT EXISTS idx_portfolio_category ON portfolio_items(category);
 CREATE INDEX IF NOT EXISTS idx_portfolio_year ON portfolio_items(year);
+
+-- Fixed-window abuse counters (admin login, lead and order endpoints).
+-- Created on demand by lib/rateLimit.ts.
+CREATE TABLE IF NOT EXISTS rate_limits (
+  bucket TEXT NOT NULL,
+  key TEXT NOT NULL,
+  window_start INTEGER NOT NULL,
+  count INTEGER NOT NULL,
+  PRIMARY KEY (bucket, key, window_start)
+);
+
+-- Admin sign-in sessions. Only a SHA-256 of each cookie token is stored, and
+-- passcode_fp ties a session to the ADMIN_PASSCODE it was issued under, so
+-- rotating the passcode signs everyone out. Created on demand by
+-- lib/admin/sessions.ts.
+CREATE TABLE IF NOT EXISTS admin_sessions (
+  token_hash TEXT PRIMARY KEY,
+  passcode_fp TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  expires_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires ON admin_sessions(expires_at);

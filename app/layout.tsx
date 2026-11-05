@@ -6,6 +6,7 @@ import "./globals.css";
 import { getSite } from "@/lib/admin/site";
 import { getSeoSettings } from "@/lib/admin/seo";
 import { siteConfig } from "@/data/site";
+import { GA_MEASUREMENT_ID } from "@/lib/validation";
 
 const display = Jost({
   variable: "--font-display",
@@ -54,7 +55,10 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const seo = await getSeoSettings();
-  const gaId = seo.gaId || process.env.NEXT_PUBLIC_GA_ID;
+  // Only a well-formed measurement ID reaches the inline script below.
+  const gaId = [seo.gaId, process.env.NEXT_PUBLIC_GA_ID]
+    .map((id) => id?.trim())
+    .find((id): id is string => Boolean(id && GA_MEASUREMENT_ID.test(id)));
 
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
@@ -76,7 +80,7 @@ export default async function RootLayout({
               strategy="afterInteractive"
             />
             <Script id="ga4" strategy="afterInteractive">
-              {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config','${gaId}',{anonymize_ip:true});`}
+              {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config',${JSON.stringify(gaId)},{anonymize_ip:true});`}
             </Script>
           </>
         ) : null}

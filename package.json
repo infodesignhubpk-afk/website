@@ -10,7 +10,18 @@
     "ignoredBuiltDependencies": [
       "sharp",
       "unrs-resolver"
-    ]
+    ],
+    "overrides": {
+      "brace-expansion@1": "^1.1.21",
+      "brace-expansion@5": "^5.0.12",
+      "js-yaml@4": "^4.3.2",
+      "nanoid@3": "^3.3.18",
+      "postcss@8": "^8.5.23",
+      "source-map-js@1": "^1.2.2",
+      "browserslist@4": "^4.28.7",
+      "baseline-browser-mapping@2": "^2.11.0",
+      "@babel/core@7": "^7.29.6"
+    }
   },
   "scripts": {
     "dev": "next dev",
@@ -20,27 +31,27 @@
     "db:init": "node scripts/d1-init.mjs"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1039.0",
-    "@aws-sdk/s3-request-presigner": "^3.1039.0",
+    "@aws-sdk/client-s3": "^3.1162.0",
+    "@aws-sdk/s3-request-presigner": "^3.1162.0",
     "@hookform/resolvers": "^5.2.2",
-    "next": "16.2.4",
+    "next": "16.4.5",
     "nextjs-toploader": "^3.9.17",
-    "nodemailer": "^9.0.6",
+    "nodemailer": "^10.3.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.74.0",
     "react-quill-new": "^3.8.3",
-    "zod": "^4.4.1"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.3.4",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.4",
-    "tailwindcss": "^4",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.5",
+    "tailwindcss": "^4.3.4",
     "typescript": "^5"
   }
 }

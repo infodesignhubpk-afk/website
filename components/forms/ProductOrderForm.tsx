@@ -15,10 +15,13 @@ const formSchema = z.object({
   customerEmail: z.string().email().optional().or(z.literal("")),
   customerBusiness: z.string().max(120).optional().or(z.literal("")),
   notes: z.string().max(2000).optional().or(z.literal("")),
-  website: z.string().max(0).optional().default(""),
+  // Honeypot: any short value passes, and the API answers a filled one with a silent success.
+  website: z.string().max(500).optional().default(""),
 });
 
 type FormInput = z.input<typeof formSchema>;
+
+const ORDER_FAILED = "We could not place your order. Please check your connection and try again, or WhatsApp us.";
 
 type Props = {
   productId: string;
@@ -60,6 +63,7 @@ export function ProductOrderForm({ productId, productSlug, productName, unitPric
           customerEmail: values.customerEmail,
           customerBusiness: values.customerBusiness,
           notes: values.notes,
+          website: values.website || undefined,
           items: [
             {
               productId,
@@ -73,16 +77,25 @@ export function ProductOrderForm({ productId, productSlug, productName, unitPric
         }),
       });
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || `Order failed (${res.status})`);
+        // Show the API's customer-safe `error`, never the raw response body.
+        let msg = ORDER_FAILED;
+        try {
+          const data: unknown = await res.json();
+          if (typeof data === "object" && data !== null && "error" in data && typeof data.error === "string" && data.error) {
+            msg = data.error;
+          }
+        } catch {}
+        setStatus("error");
+        setError(msg);
+        return;
       }
       const data = (await res.json()) as { reference?: string };
       setStatus("ok");
       setReference(data.reference ?? null);
       reset();
-    } catch (e) {
+    } catch {
       setStatus("error");
-      setError(e instanceof Error ? e.message : "Order failed.");
+      setError(ORDER_FAILED);
     }
   }
 
