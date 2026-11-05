@@ -40,6 +40,19 @@ CREATE INDEX IF NOT EXISTS idx_case_studies_published ON case_studies(published)
 CREATE INDEX IF NOT EXISTS idx_case_studies_category ON case_studies(category);
 CREATE INDEX IF NOT EXISTS idx_case_studies_client ON case_studies(client);
 
+CREATE TABLE IF NOT EXISTS services (
+  id TEXT PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE,
+  data TEXT NOT NULL,
+  category TEXT NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  published INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_services_published ON services(published);
+CREATE INDEX IF NOT EXISTS idx_services_sort ON services(sort_order);
+
 CREATE TABLE IF NOT EXISTS products (
   id TEXT PRIMARY KEY,
   slug TEXT NOT NULL UNIQUE,

@@ -6,6 +6,7 @@ import { QuoteForm } from "@/components/forms/QuoteForm";
 import { buildMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbList } from "@/lib/schema";
+import { listPublishedServices } from "@/lib/admin/services";
 
 export const metadata: Metadata = buildMetadata({
   title: "Get a Quote | Design Hub Peshawar",
@@ -14,7 +15,8 @@ export const metadata: Metadata = buildMetadata({
   path: "/get-quote",
 });
 
-export default function GetQuotePage() {
+export default async function GetQuotePage() {
+  const services = await listPublishedServices();
   return (
     <>
       <PageHero
@@ -28,7 +30,7 @@ export default function GetQuotePage() {
 
       <Section surface="alt">
         <Container className="max-w-4xl">
-          <QuoteForm />
+          <QuoteForm services={services.map(({ slug, keyword }) => ({ slug, keyword }))} />
         </Container>
       </Section>
 

@@ -1,3 +1,6 @@
+// Seed content for the services table. After first run, services are edited
+// in /admin/services (lib/admin/services.ts); changes here only apply to an
+// empty D1 database or when D1 is not configured.
 import type { Service } from "@/types";
 import { industryNames } from "@/data/industries";
 
@@ -546,15 +549,3 @@ export const services: Service[] = [
     relatedSlugs: ["social-media-marketing-peshawar", "graphic-design-peshawar", "branding-agency-peshawar"],
   },
 ];
-
-export const serviceSlugs = services.map((s) => s.slug);
-
-export function getService(slug: string) {
-  return services.find((s) => s.slug === slug);
-}
-
-export function getRelatedServices(slugs: string[]) {
-  return slugs
-    .map((slug) => services.find((s) => s.slug === slug))
-    .filter((s): s is Service => Boolean(s));
-}

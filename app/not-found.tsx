@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ArrowRightIcon } from "@/components/ui/Icons";
-import { services } from "@/data/services";
+import { listPublishedServices } from "@/lib/admin/services";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
@@ -17,7 +17,7 @@ export const metadata = {
 
 export default async function NotFound() {
   const site = await getSite();
-  const popular = services.slice(0, 4);
+  const popular = (await listPublishedServices()).slice(0, 4);
   return (
     <div className="flex min-h-screen flex-col pb-12 md:pb-0">
       <Header />

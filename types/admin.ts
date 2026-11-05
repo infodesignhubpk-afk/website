@@ -1,4 +1,4 @@
-import type { CaseStudy, ServiceCategory } from "@/types";
+import type { CaseStudy, Service, ServiceCategory } from "@/types";
 
 export type SiteSettings = {
   name: string;
@@ -127,6 +127,12 @@ export type AdminCaseStudy = CaseStudy & {
   published: boolean;
   metaTitle?: string;
   metaDescription?: string;
+};
+
+export type AdminService = Service & {
+  id: string;
+  published: boolean;
+  order: number;
 };
 
 export type Order = {

@@ -13,6 +13,7 @@ const sections: { heading: string; items: { href: string; label: string }[] }[] 
   {
     heading: "Content",
     items: [
+      { href: "/admin/services", label: "Services" },
       { href: "/admin/blogs", label: "Blogs" },
       { href: "/admin/case-studies", label: "Case Studies" },
       { href: "/admin/products", label: "Products" },

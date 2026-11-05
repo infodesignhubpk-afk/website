@@ -2,11 +2,11 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/layout/Logo";
 import { SocialLinks } from "@/components/layout/SocialLinks";
-import { services } from "@/data/services";
+import { listPublishedServices } from "@/lib/admin/services";
 import { getSite } from "@/lib/admin/site";
 
 export async function Footer() {
-  const site = await getSite();
+  const [site, services] = await Promise.all([getSite(), listPublishedServices()]);
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-line bg-ink text-white">

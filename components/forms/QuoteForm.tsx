@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { quoteSchema, type QuoteInput } from "@/lib/validation";
 import { FormField, inputCls } from "@/components/forms/FormField";
 import { Button } from "@/components/ui/Button";
-import { services } from "@/data/services";
 import { cn } from "@/lib/utils";
 import { CheckIcon } from "@/components/ui/Icons";
 
@@ -22,7 +21,9 @@ const timelineOptions = ["ASAP", "Within 2 weeks", "Within 1 month", "1–3 mont
 
 type Step = 1 | 2 | 3;
 
-export function QuoteForm() {
+type Props = { services: { slug: string; keyword: string }[] };
+
+export function QuoteForm({ services }: Props) {
   const [step, setStep] = useState<Step>(1);
   const [status, setStatus] = useState<"idle" | "ok" | "error">("idle");
   const [message, setMessage] = useState<string>("");

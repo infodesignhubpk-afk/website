@@ -3,6 +3,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { listBlogPosts } from "@/lib/admin/blogs";
 import { listCaseStudies } from "@/lib/admin/case-studies";
+import { listServices } from "@/lib/admin/services";
 import { listProducts } from "@/lib/admin/products";
 import { listCategories } from "@/lib/admin/categories";
 import { listOrders } from "@/lib/admin/orders";
@@ -27,7 +28,8 @@ export default async function AdminHome() {
     );
   }
 
-  const [posts, caseStudies, products, categories, orders] = await Promise.all([
+  const [services, posts, caseStudies, products, categories, orders] = await Promise.all([
+    listServices(),
     listBlogPosts(),
     listCaseStudies(),
     listProducts(),
@@ -36,6 +38,7 @@ export default async function AdminHome() {
   ]);
 
   const stats = [
+    { label: "Services", value: services.length, href: "/admin/services" },
     { label: "Blog posts", value: posts.length, href: "/admin/blogs" },
     { label: "Case studies", value: caseStudies.length, href: "/admin/case-studies" },
     { label: "Products", value: products.length, href: "/admin/products" },

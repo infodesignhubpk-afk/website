@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/data/site";
-import { services } from "@/data/services";
 import { listPublishedPortfolio } from "@/lib/admin/portfolio";
 import { listPublishedCaseStudies } from "@/lib/admin/case-studies";
+import { listPublishedServices } from "@/lib/admin/services";
 import { listPublishedPosts } from "@/lib/admin/blogs";
 import { listPublishedProducts } from "@/lib/admin/products";
 import { listCategories } from "@/lib/admin/categories";
@@ -36,6 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: path === "" ? 1.0 : 0.8,
   }));
 
+  const services = await listPublishedServices();
   const serviceEntries: MetadataRoute.Sitemap = services.map((s) => ({
     url: `${base}/services/${s.slug}`,
     lastModified: now,

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
-import { services } from "@/data/services";
+import { listPublishedServices } from "@/lib/admin/services";
 import { buildMetadata } from "@/lib/seo";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -26,12 +26,13 @@ const palettes: Record<ServiceCategory, string> = {
   social: "bg-ink text-white",
 };
 
-export default function ServicesIndexPage() {
+export default async function ServicesIndexPage() {
+  const services = await listPublishedServices();
   return (
     <>
       <PageHero
         title="Services"
-        description="Ten services that cover the full journey of a brand in Peshawar — from the first sketch of a logo to the last hoarding on Ring Road. Pick the closest match and we will scope from there."
+        description="Services that cover the full journey of a brand in Peshawar — from the first sketch of a logo to the last hoarding on Ring Road. Pick the closest match and we will scope from there."
         breadcrumbs={[
           { name: "Home", href: "/" },
           { name: "Services", href: "/services" },

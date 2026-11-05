@@ -2,12 +2,13 @@ import Link from "next/link";
 import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getRelatedServices } from "@/data/services";
+import { getRelatedServices } from "@/lib/admin/services";
 
 type Props = { slugs: string[] };
 
-export function RelatedServices({ slugs }: Props) {
-  const related = getRelatedServices(slugs);
+export async function RelatedServices({ slugs }: Props) {
+  const related = await getRelatedServices(slugs);
+  if (related.length === 0) return null;
   return (
     <Section surface="alt">
       <Container>

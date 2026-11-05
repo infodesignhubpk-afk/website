@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { ArrowRightIcon } from "@/components/ui/Icons";
-import { services } from "@/data/services";
+import { listPublishedServices } from "@/lib/admin/services";
 import type { ServiceCategory } from "@/types";
 
 const categoryLabel: Record<ServiceCategory, string> = {
@@ -25,14 +25,21 @@ const iconBadgeStyle: Record<ServiceCategory, string> = {
   social: "bg-gradient-to-br from-cta/30 to-brand/15 text-ink",
 };
 
-export function ServicesGrid() {
+const COUNT_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"];
+
+function countWord(n: number): string {
+  return COUNT_WORDS[n] ?? String(n);
+}
+
+export async function ServicesGrid() {
+  const services = await listPublishedServices();
   return (
     <Section id="services" surface="white">
       <Container>
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <SectionHeading
             eyebrow="Services"
-            title={<>Ten services. One studio. <span className="text-muted">Zero handoffs.</span></>}
+            title={<>{countWord(services.length)} services. One studio. <span className="text-muted">Zero handoffs.</span></>}
             description="Everything you need to launch, run and scale a brand in Peshawar — from the first sketch of a logo to the last billboard on Ring Road."
           />
           <Link
